@@ -64,8 +64,8 @@ interface Props {
 
 export default function TicketsClient({ boothId }: Props) {
   const [from, setFrom] = useState('1')
-  const [to, setTo] = useState('50')
-  const [eventName, setEventName] = useState('')
+  const [to, setTo] = useState('160')
+  const eventName = 'いばらき ✕ 立命館DAY 2026'
   const [error, setError] = useState<string | null>(null)
   const [pdfReady, setPdfReady] = useState(false)
   const [downloading, setDownloading] = useState(false)
@@ -192,28 +192,9 @@ export default function TicketsClient({ boothId }: Props) {
         elevation={0}
         sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 3, mb: 3 }}
       >
-        {/* セクション① イベント名 */}
+        {/* セクション① 番号範囲 */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
           <StepBadge n={1} />
-          <Typography fontWeight="bold" fontSize="0.95rem">
-            イベント名を入力（任意）
-          </Typography>
-        </Box>
-        <TextField
-          placeholder="例: いばらき × 立命館DAY 2026"
-          value={eventName}
-          onChange={(e) => { setEventName(e.target.value); setPdfReady(false) }}
-          fullWidth
-          size="small"
-          sx={{ mb: 3 }}
-        />
-
-        {/* 区切り線 */}
-        <Box sx={{ borderTop: '1px solid #f0f0f0', mx: -3, mb: 3 }} />
-
-        {/* セクション② 番号範囲 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-          <StepBadge n={2} />
           <Typography fontWeight="bold" fontSize="0.95rem">
             整理券の番号範囲を指定
           </Typography>
