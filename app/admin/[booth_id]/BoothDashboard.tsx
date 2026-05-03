@@ -326,7 +326,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
   const badgeColor = isCalled ? '#a32d2d' : isOnHold ? '#854f0b' : '#185fa5'
   const badgeLabel = isCalled ? '呼出中' : isOnHold ? '保留' : '待ち'
 
-  const timeStr = new Date(ticket.created_at).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })
+  const timeStr = new Date(ticket.updated_at).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })
 
   return (
     <Box
