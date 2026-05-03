@@ -40,7 +40,7 @@ export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle }:
       sx={{
         width: isSidebarOpen ? openDrawerWidth : closedDrawerWidth,
         flexShrink: 0,
-        whiteSpace: 'nowrap',
+        whiteSpace: 'normal',
         boxSizing: 'border-box',
         transition: 'width 0.2s',
         overflow: 'hidden',
@@ -93,7 +93,7 @@ export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle }:
         <Typography
           variant="h6"
           fontWeight="bold"
-          sx={{ color: SIDEBAR_TEXT, fontSize: '24px', lineHeight: 1.2, letterSpacing: '-0.2px' }}
+          sx={{ color: SIDEBAR_TEXT, fontSize: '24px', lineHeight: 1.2, letterSpacing: '-0.2px', overflowWrap: 'break-word' }}
         >
           {boothName}
         </Typography>

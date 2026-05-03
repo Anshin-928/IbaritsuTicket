@@ -35,9 +35,24 @@ function renderTextCanvas(
   canvas.height = h
   const ctx = canvas.getContext('2d')!
   ctx.fillStyle    = color
-  ctx.font         = font
   ctx.textAlign    = 'center'
   ctx.textBaseline = 'middle'
+
+  // フォントサイズを自動縮小して幅に収める
+  ctx.font = font
+  let measured = ctx.measureText(text)
+  if (measured.width > w * 0.95) {
+    const match = font.match(/(\d+(?:\.\d+)?)px/)
+    if (match) {
+      let fontSize = parseFloat(match[1])
+      while (measured.width > w * 0.95 && fontSize > 8) {
+        fontSize -= 2
+        ctx.font = font.replace(/(\d+(?:\.\d+)?)px/, `${fontSize}px`)
+        measured = ctx.measureText(text)
+      }
+    }
+  }
+
   ctx.fillText(text, w / 2, h / 2)
   return canvas.toDataURL('image/png')
 }

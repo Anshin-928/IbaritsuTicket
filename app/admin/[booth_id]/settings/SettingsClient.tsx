@@ -63,7 +63,7 @@ export default function SettingsClient({ booth }: Props) {
       setResetInput('')
       setResetResult(
         res.ok
-          ? { ok: true, text: `初期化完了 — ${res.deletedCount}件のチケットを削除しました` }
+          ? { ok: true, text: `${res.deletedCount}件のチケットを削除しました` }
           : { ok: false, text: res.error },
       )
     })
@@ -112,18 +112,18 @@ export default function SettingsClient({ booth }: Props) {
         )}
       </Paper>
 
-      {/* ── イベント初期化 ── */}
+      {/* ── チケット全削除 ── */}
       <Paper
         elevation={0}
         sx={{ border: '1.5px solid #e53935', borderRadius: 2, p: 3, bgcolor: '#fffafa' }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
           <WarningAmberIcon sx={{ color: '#e53935' }} />
-          <Typography fontWeight="bold" fontSize="1rem" color="#c62828">イベント初期化</Typography>
+          <Typography fontWeight="bold" fontSize="1rem" color="#c62828">チケット全削除</Typography>
         </Box>
         <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary', mb: 2.5, lineHeight: 1.7 }}>
-          このブースの<strong>全チケットを削除</strong>し、ブースのステータスを「空き（直行）モード」に戻します。<br />
-          学祭当日の開始前や、テスト運用後のリセットに使用してください。<br />
+          <strong>{booth.name}</strong> のチケットをすべて削除します。開始前・テスト後のリセットに使用してください。<br />
+          ブース自体は残ります。また、他のブースには影響しません。<br />
           <strong>この操作は取り消せません。</strong>
         </Typography>
 
@@ -140,7 +140,7 @@ export default function SettingsClient({ booth }: Props) {
           onClick={() => { setResetConfirmOpen(true); setResetInput('') }}
           sx={{ fontWeight: 'bold' }}
         >
-          イベントを初期化する
+          チケットをすべて削除する
         </Button>
       </Paper>
 
@@ -151,10 +151,10 @@ export default function SettingsClient({ booth }: Props) {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
           <WarningAmberIcon sx={{ color: '#b71c1c' }} />
-          <Typography fontWeight="bold" fontSize="1rem" color="#b71c1c">ブースの削除</Typography>
+          <Typography fontWeight="bold" fontSize="1rem" color="#b71c1c">このブースを削除</Typography>
         </Box>
         <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary', mb: 2.5, lineHeight: 1.7 }}>
-          このブースと<strong>全チケットを完全に削除</strong>します。<br />
+          <strong>{booth.name}</strong> と全チケットを削除します。他のブースには影響しません。<br />
           <strong>この操作は取り消せません。</strong>
         </Typography>
         <Button
@@ -220,7 +220,7 @@ export default function SettingsClient({ booth }: Props) {
         </DialogActions>
       </Dialog>
 
-      {/* 初期化確認ダイアログ */}
+      {/* チケット全削除確認ダイアログ */}
       <Dialog
         open={resetConfirmOpen}
         onClose={() => !resetPending && setResetConfirmOpen(false)}
@@ -228,12 +228,13 @@ export default function SettingsClient({ booth }: Props) {
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1 }}>
           <WarningAmberIcon sx={{ color: '#e53935', fontSize: 28 }} />
-          <Typography variant="h6" component="span" fontWeight="bold">本当に初期化しますか？</Typography>
+          <Typography variant="h6" component="span" fontWeight="bold">チケットをすべて削除しますか？</Typography>
         </DialogTitle>
 
         <DialogContent sx={{ pt: 0, pb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography sx={{ color: 'text.secondary', fontSize: '0.95rem', lineHeight: 1.7 }}>
-            <strong>{booth.name}</strong> の全チケットが削除されます。この操作は取り消せません。
+            <strong>{booth.name}</strong> のチケットがすべて削除されます。<br />
+            ブース自体と他のブースには影響しません。この操作は取り消せません。
           </Typography>
           <Box>
             <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary', mb: 0.75 }}>
@@ -268,7 +269,7 @@ export default function SettingsClient({ booth }: Props) {
             onClick={handleReset}
             sx={{ flex: 1, fontWeight: 'bold', boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
           >
-            {resetPending ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : '初期化する'}
+            {resetPending ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : '削除する'}
           </Button>
         </DialogActions>
       </Dialog>

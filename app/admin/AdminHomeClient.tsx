@@ -135,7 +135,7 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
         sx={{
           width: isSidebarOpen ? DRAWER_WIDTH : 0,
           flexShrink: 0,
-          whiteSpace: 'nowrap',
+          whiteSpace: 'normal',
           boxSizing: 'border-box',
           transition: 'width 0.2s',
           overflow: 'hidden',
@@ -261,7 +261,7 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
                 >
                   <ListItemText
                     primary={booth.name}
-                    sx={{ ml: '58px', '& .MuiTypography-root': { fontSize: '16px', fontWeight: isSelected ? 700 : 600, color: isSelected ? '#fff' : SIDEBAR_TEXT } }}
+                    sx={{ ml: '58px', '& .MuiTypography-root': { fontSize: '16px', fontWeight: isSelected ? 700 : 600, color: isSelected ? '#fff' : SIDEBAR_TEXT, whiteSpace: 'normal', overflowWrap: 'break-word' } }}
                   />
                   <ChevronRightIcon
                     sx={{
