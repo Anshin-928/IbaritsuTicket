@@ -135,7 +135,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       >
         <Typography
           sx={{
-            fontSize: '100px',
+            fontSize: ticket.ticket_number >= 100 ? '72px' : '100px',
             fontWeight: 500,
             color: statusConfig.numberColor,
             lineHeight: 1,
