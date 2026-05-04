@@ -3,11 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import CircularProgress from '@mui/material/CircularProgress'
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
-import HourglassTopIcon from '@mui/icons-material/HourglassTop'
-import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import { supabase } from '@/lib/supabase'
 import type { Booth, Ticket } from '@/types/database'
@@ -26,7 +21,6 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       setAheadCount(null)
       return
     }
-    // called の件数 + 自分より ticket_number が小さい waiting の件数
     const [{ count: calledCount }, { count: waitingAheadCount }] = await Promise.all([
       supabase
         .from('tickets')
@@ -94,97 +88,133 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: statusConfig.bg,
+        bgcolor: '#f5f4f1',
         px: 3,
         py: 5,
-        transition: 'background-color 0.5s ease',
       }}
     >
       {/* ブース名 */}
       <Typography
-        sx={{ fontSize: '18px', fontWeight: 600, color: '#1e293b', mb: 1, letterSpacing: '0.05em' }}
+        sx={{
+          fontSize: '13px',
+          fontWeight: 500,
+          color: '#6b6b68',
+          mb: 0.5,
+          letterSpacing: '0.08em',
+        }}
       >
         {initialBooth.name}
       </Typography>
 
       {/* 整理券ラベル */}
       <Typography
-        sx={{ fontSize: '12px', color: '#94a3b8', mb: 3, letterSpacing: '0.1em', textTransform: 'uppercase' }}
+        sx={{
+          fontSize: '11px',
+          color: '#b0aea8',
+          mb: 3.5,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+        }}
       >
         整理券
       </Typography>
 
-      {/* 番号 */}
+      {/* 番号サークル（枠線のみ） */}
       <Box
         sx={{
-          width: 200,
-          height: 200,
+          width: 148,
+          height: 148,
           borderRadius: '50%',
-          bgcolor: statusConfig.circle,
+          border: `1.5px ${statusConfig.borderStyle} ${statusConfig.accent}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: `0 8px 40px ${statusConfig.shadow}`,
-          mb: 4,
-          transition: 'all 0.5s ease',
+          mb: 3.5,
+          transition: 'border-color 0.4s ease',
         }}
       >
-        <Typography sx={{ fontSize: '96px', fontWeight: 700, color: statusConfig.numberColor, lineHeight: 1 }}>
+        <Typography
+          sx={{
+            fontSize: '72px',
+            fontWeight: 500,
+            color: statusConfig.numberColor,
+            lineHeight: 1,
+            transition: 'color 0.4s ease',
+          }}
+        >
           {ticket.ticket_number}
         </Typography>
       </Box>
 
-      {/* ステータスアイコン + メッセージ */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, mb: 4 }}>
-        <Box sx={{ color: statusConfig.accent, display: 'flex', alignItems: 'center' }}>
-          {statusConfig.icon}
-        </Box>
+      {/* ステータスドット + タイトル */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+        <Box
+          sx={{
+            width: 7,
+            height: 7,
+            borderRadius: '50%',
+            bgcolor: statusConfig.dotFilled ? statusConfig.accent : 'transparent',
+            border: statusConfig.dotFilled ? 'none' : `1.5px solid ${statusConfig.accent}`,
+            flexShrink: 0,
+            transition: 'background-color 0.4s ease, border-color 0.4s ease',
+          }}
+        />
         <Typography
           sx={{
-            fontSize: '26px',
-            fontWeight: 700,
-            color: '#1e293b',
-            textAlign: 'center',
+            fontSize: '18px',
+            fontWeight: 500,
+            color: statusConfig.titleColor,
             lineHeight: 1.3,
           }}
         >
           {statusConfig.title}
         </Typography>
-        {statusConfig.subtitle && (
-          <Typography sx={{ fontSize: '15px', color: '#64748b', textAlign: 'center', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
-            {statusConfig.subtitle}
-          </Typography>
-        )}
       </Box>
 
+      {/* サブテキスト */}
+      {statusConfig.subtitle && (
+        <Typography
+          sx={{
+            fontSize: '13px',
+            color: '#8a8a86',
+            textAlign: 'center',
+            lineHeight: 1.65,
+            whiteSpace: 'pre-line',
+            mb: 2.5,
+          }}
+        >
+          {statusConfig.subtitle}
+        </Typography>
+      )}
+
       {/* 待ち人数 */}
-      {ticket.status === 'waiting' && aheadCount !== null && (
+      {ticket.status === 'waiting' && aheadCount !== null && aheadCount > 0 && (
         <Box
           sx={{
-            bgcolor: 'rgba(0,0,0,0.06)',
+            border: '0.5px solid #d8d6d0',
             borderRadius: '12px',
-            px: 4,
-            py: 2,
+            px: 3.5,
+            py: 1.5,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 0.5,
-            mb: 3,
+            gap: 0.25,
+            mb: 2,
           }}
         >
-          <Typography sx={{ fontSize: '13px', color: '#94a3b8' }}>あなたの前に</Typography>
-          <Typography sx={{ fontSize: '40px', fontWeight: 700, color: '#1e293b', lineHeight: 1 }}>
+          <Typography sx={{ fontSize: '11px', color: '#b0aea8' }}>あなたの前に</Typography>
+          <Typography sx={{ fontSize: '36px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
             {aheadCount}
           </Typography>
-          <Typography sx={{ fontSize: '13px', color: '#94a3b8' }}>組 待っています</Typography>
+          <Typography sx={{ fontSize: '11px', color: '#b0aea8' }}>組 待っています</Typography>
         </Box>
       )}
 
       {/* 人数 */}
       {ticket.party_size > 0 && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 1 }}>
-          <PeopleAltOutlinedIcon sx={{ fontSize: '18px', color: '#94a3b8' }} />
-          <Typography sx={{ fontSize: '15px', color: '#94a3b8' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 2.5 }}>
+          <PeopleAltOutlinedIcon sx={{ fontSize: '13px', color: '#b0aea8' }} />
+          <Typography sx={{ fontSize: '12px', color: '#b0aea8' }}>
             {ticket.party_size}名
           </Typography>
         </Box>
@@ -193,46 +223,56 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* 注意事項 */}
       <Box
         sx={{
-          mt: 4,
-          mx: 1,
-          px: 2.5,
-          py: 1.75,
-          bgcolor: ticket.status === 'called' ? 'rgba(245,158,11,0.12)' : 'rgba(0,0,0,0.04)',
-          borderRadius: '10px',
-          borderLeft: ticket.status === 'called' ? '3px solid #f59e0b' : '3px solid transparent',
-          maxWidth: 340,
+          borderTop: `0.5px solid ${ticket.status === 'called' ? '#e8d49a' : '#d8d6d0'}`,
+          pt: 1.75,
+          maxWidth: 280,
+          width: '100%',
+          mt: 'auto',
         }}
       >
         <Typography
           sx={{
-            fontSize: '12px',
-            color: ticket.status === 'called' ? '#92400e' : '#94a3b8',
+            fontSize: '11px',
+            color: ticket.status === 'called' ? '#c8a84b' : '#c0beb8',
             lineHeight: 1.7,
             textAlign: 'left',
+            transition: 'color 0.4s ease',
           }}
         >
           ※ お呼び出し後、一定時間内にお越しにならない場合は、キャンセル扱いとなる場合がございます。予めご了承ください。
         </Typography>
       </Box>
 
-      {/* ローディングインジケーター（リアルタイム接続中） */}
-      <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', alignItems: 'center', gap: 1, opacity: 0.35 }}>
-        <CircularProgress size={12} thickness={5} sx={{ color: '#94a3b8' }} />
-        <Typography sx={{ fontSize: '11px', color: '#64748b' }}>リアルタイム更新中</Typography>
+      {/* リアルタイム更新インジケーター */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.75,
+          mt: 1.75,
+          opacity: 0.45,
+        }}
+      >
+        <Box
+          sx={{
+            width: 5,
+            height: 5,
+            borderRadius: '50%',
+            bgcolor: '#b0aea8',
+          }}
+        />
+        <Typography sx={{ fontSize: '10px', color: '#8a8a86' }}>リアルタイム更新中</Typography>
       </Box>
     </Box>
   )
 }
 
 interface StatusConfig {
-  bg: string
-  circle: string
-  shadow: string
   accent: string
+  borderStyle: 'solid' | 'dashed'
   numberColor: string
-  textMain: string
-  textSub: string
-  icon: React.ReactNode
+  dotFilled: boolean
+  titleColor: string
   title: string
   subtitle?: string
 }
@@ -241,56 +281,44 @@ function getStatusConfig(ticket: Ticket, aheadCount: number | null): StatusConfi
   switch (ticket.status) {
     case 'called':
       return {
-        bg: '#fffbeb',
-        circle: '#f59e0b',
-        shadow: 'rgba(0,0,0,0.12)',
-        accent: '#f59e0b',
-        numberColor: '#fff',
-        textMain: '#1e293b',
-        textSub: '#64748b',
-        icon: <NotificationsActiveIcon sx={{ fontSize: 52 }} />,
-        title: 'お呼びしています！',
+        accent: '#c8a84b',
+        borderStyle: 'solid',
+        numberColor: '#c8a84b',
+        dotFilled: true,
+        titleColor: '#1c1c1a',
+        title: 'お呼びしています',
         subtitle: 'スタッフにお声がけください\nまたはブース受付へお越しください',
       }
     case 'on_hold':
       return {
-        bg: '#fafaf9',
-        circle: '#f97316',
-        shadow: 'rgba(0,0,0,0.12)',
-        accent: '#f97316',
-        numberColor: '#fff',
-        textMain: '#1e293b',
-        textSub: '#64748b',
-        icon: <PauseCircleOutlineIcon sx={{ fontSize: 52 }} />,
+        accent: '#b0aea8',
+        borderStyle: 'dashed',
+        numberColor: '#8a8a86',
+        dotFilled: false,
+        titleColor: '#6b6b68',
         title: '保留中',
         subtitle: 'お呼びした際に不在でした\nお戻りの際はスタッフまで\nお声がけください',
       }
     case 'done':
     case 'direct':
       return {
-        bg: '#f0fdf4',
-        circle: '#22c55e',
-        shadow: 'rgba(0,0,0,0.10)',
-        accent: '#22c55e',
-        numberColor: '#fff',
-        textMain: '#1e293b',
-        textSub: '#64748b',
-        icon: <CheckCircleOutlineIcon sx={{ fontSize: 52 }} />,
+        accent: '#7aaa6a',
+        borderStyle: 'solid',
+        numberColor: '#7aaa6a',
+        dotFilled: true,
+        titleColor: '#1c1c1a',
         title: 'ご案内済みです',
-        subtitle: 'ありがとうございました！',
+        subtitle: 'ありがとうございました',
       }
     case 'waiting':
     default:
       return {
-        bg: '#f8fafc',
-        circle: '#3b82f6',
-        shadow: 'rgba(0,0,0,0.10)',
-        accent: '#3b82f6',
-        numberColor: '#fff',
-        textMain: '#1e293b',
-        textSub: '#64748b',
-        icon: <HourglassTopIcon sx={{ fontSize: 48 }} />,
-        title: aheadCount === 0 ? 'もうすぐご案内します' : '順番待ち中です',
+        accent: '#b0aea8',
+        borderStyle: 'solid',
+        numberColor: '#1c1c1a',
+        dotFilled: true,
+        titleColor: '#1c1c1a',
+        title: aheadCount === 0 ? 'もうすぐご案内します' : '順番待ち中',
         subtitle:
           aheadCount === 0
             ? 'ブース付近でお待ちください'
