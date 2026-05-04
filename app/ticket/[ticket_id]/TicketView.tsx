@@ -98,7 +98,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
         sx={{
           fontSize: '24px',
           fontWeight: 500,
-          color: '#6b6b68',
+          color: '#1c1c1a',
           mb: 0.5,
           letterSpacing: '0.08em',
         }}
@@ -122,8 +122,8 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* 番号サークル（枠線のみ） */}
       <Box
         sx={{
-          width: 200,
-          height: 200,
+          width: 168,
+          height: 168,
           borderRadius: '50%',
           border: `1.5px ${statusConfig.borderStyle} ${statusConfig.accent}`,
           display: 'flex',
@@ -181,6 +181,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
             textAlign: 'center',
             lineHeight: 1.65,
             whiteSpace: 'pre-line',
+            maxWidth: 280,
             mb: 2.5,
           }}
         >
@@ -203,11 +204,11 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
             mb: 2,
           }}
         >
-          <Typography sx={{ fontSize: '15px', color: '#8a8a86' }}>あなたの前に</Typography>
+          <Typography sx={{ fontSize: '17px', color: '#8a8a86' }}>あなたの前に</Typography>
           <Typography sx={{ fontSize: '40px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
             {aheadCount}
           </Typography>
-          <Typography sx={{ fontSize: '15px', color: '#8a8a86' }}>組 待っています</Typography>
+          <Typography sx={{ fontSize: '17px', color: '#8a8a86' }}>組 待っています</Typography>
         </Box>
       )}
 
