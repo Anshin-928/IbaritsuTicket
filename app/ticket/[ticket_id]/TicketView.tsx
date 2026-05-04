@@ -96,7 +96,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* ブース名 */}
       <Typography
         sx={{
-          fontSize: '13px',
+          fontSize: '16px',
           fontWeight: 500,
           color: '#6b6b68',
           mb: 0.5,
@@ -109,8 +109,8 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* 整理券ラベル */}
       <Typography
         sx={{
-          fontSize: '11px',
-          color: '#b0aea8',
+          fontSize: '12px',
+          color: '#8a8a86',
           mb: 3.5,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -135,7 +135,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       >
         <Typography
           sx={{
-            fontSize: '72px',
+            fontSize: '80px',
             fontWeight: 500,
             color: statusConfig.numberColor,
             lineHeight: 1,
@@ -161,10 +161,11 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
         />
         <Typography
           sx={{
-            fontSize: '18px',
+            fontSize: '17px',
             fontWeight: 500,
             color: statusConfig.titleColor,
             lineHeight: 1.3,
+            whiteSpace: 'nowrap',
           }}
         >
           {statusConfig.title}
@@ -175,7 +176,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {statusConfig.subtitle && (
         <Typography
           sx={{
-            fontSize: '13px',
+            fontSize: '14px',
             color: '#8a8a86',
             textAlign: 'center',
             lineHeight: 1.65,
@@ -202,19 +203,19 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
             mb: 2,
           }}
         >
-          <Typography sx={{ fontSize: '11px', color: '#b0aea8' }}>あなたの前に</Typography>
-          <Typography sx={{ fontSize: '36px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
+          <Typography sx={{ fontSize: '12px', color: '#8a8a86' }}>あなたの前に</Typography>
+          <Typography sx={{ fontSize: '40px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
             {aheadCount}
           </Typography>
-          <Typography sx={{ fontSize: '11px', color: '#b0aea8' }}>組 待っています</Typography>
+          <Typography sx={{ fontSize: '12px', color: '#8a8a86' }}>組 待っています</Typography>
         </Box>
       )}
 
       {/* 人数 */}
       {ticket.party_size > 0 && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 2.5 }}>
-          <PeopleAltOutlinedIcon sx={{ fontSize: '13px', color: '#b0aea8' }} />
-          <Typography sx={{ fontSize: '12px', color: '#b0aea8' }}>
+          <PeopleAltOutlinedIcon sx={{ fontSize: '14px', color: '#8a8a86' }} />
+          <Typography sx={{ fontSize: '13px', color: '#8a8a86' }}>
             {ticket.party_size}名
           </Typography>
         </Box>
@@ -223,7 +224,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* 注意事項 */}
       <Box
         sx={{
-          borderTop: `0.5px solid ${ticket.status === 'called' ? '#e8d49a' : '#d8d6d0'}`,
+          borderTop: `0.5px solid ${ticket.status === 'called' ? '#e8b870' : '#d8d6d0'}`,
           pt: 1.75,
           maxWidth: 280,
           width: '100%',
@@ -233,7 +234,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
         <Typography
           sx={{
             fontSize: '11px',
-            color: ticket.status === 'called' ? '#c8a84b' : '#c0beb8',
+            color: ticket.status === 'called' ? '#c97028' : '#7a7874',
             lineHeight: 1.7,
             textAlign: 'left',
             transition: 'color 0.4s ease',
@@ -281,13 +282,13 @@ function getStatusConfig(ticket: Ticket, aheadCount: number | null): StatusConfi
   switch (ticket.status) {
     case 'called':
       return {
-        accent: '#c8a84b',
+        accent: '#c97028',
         borderStyle: 'solid',
-        numberColor: '#c8a84b',
+        numberColor: '#c97028',
         dotFilled: true,
         titleColor: '#1c1c1a',
         title: 'お呼びしています',
-        subtitle: 'スタッフにお声がけください\nまたはブース受付へお越しください',
+        subtitle: 'お待たせいたしました。\nお客様のご案内順となりましたので、受付までお越しください。',
       }
     case 'on_hold':
       return {
@@ -297,7 +298,7 @@ function getStatusConfig(ticket: Ticket, aheadCount: number | null): StatusConfi
         dotFilled: false,
         titleColor: '#6b6b68',
         title: '保留中',
-        subtitle: 'お呼びした際に不在でした\nお戻りの際はスタッフまで\nお声がけください',
+        subtitle: 'お呼びした際に不在でした。\nお戻りの際はスタッフまで\nお声がけください',
       }
     case 'done':
     case 'direct':
@@ -318,11 +319,11 @@ function getStatusConfig(ticket: Ticket, aheadCount: number | null): StatusConfi
         numberColor: '#1c1c1a',
         dotFilled: true,
         titleColor: '#1c1c1a',
-        title: aheadCount === 0 ? 'もうすぐご案内します' : '順番待ち中',
+        title: aheadCount === 0 ? 'まもなくご案内いたします' : '順番待ち中',
         subtitle:
           aheadCount === 0
             ? 'ブース付近でお待ちください'
-            : 'お名前をお呼びするまでしばらくお待ちください',
+            : '番号をお呼びするまでしばらくお待ちください',
       }
   }
 }
