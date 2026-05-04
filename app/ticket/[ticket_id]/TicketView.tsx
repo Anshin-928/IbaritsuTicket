@@ -96,7 +96,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* ブース名 */}
       <Typography
         sx={{
-          fontSize: '16px',
+          fontSize: '24px',
           fontWeight: 500,
           color: '#6b6b68',
           mb: 0.5,
@@ -109,7 +109,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* 整理券ラベル */}
       <Typography
         sx={{
-          fontSize: '12px',
+          fontSize: '18px',
           color: '#8a8a86',
           mb: 3.5,
           letterSpacing: '0.12em',
@@ -122,8 +122,8 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* 番号サークル（枠線のみ） */}
       <Box
         sx={{
-          width: 148,
-          height: 148,
+          width: 222,
+          height: 222,
           borderRadius: '50%',
           border: `1.5px ${statusConfig.borderStyle} ${statusConfig.accent}`,
           display: 'flex',
@@ -135,7 +135,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       >
         <Typography
           sx={{
-            fontSize: '80px',
+            fontSize: '120px',
             fontWeight: 500,
             color: statusConfig.numberColor,
             lineHeight: 1,
@@ -150,8 +150,8 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
         <Box
           sx={{
-            width: 7,
-            height: 7,
+            width: 11,
+            height: 11,
             borderRadius: '50%',
             bgcolor: statusConfig.dotFilled ? statusConfig.accent : 'transparent',
             border: statusConfig.dotFilled ? 'none' : `1.5px solid ${statusConfig.accent}`,
@@ -161,7 +161,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
         />
         <Typography
           sx={{
-            fontSize: '17px',
+            fontSize: '26px',
             fontWeight: 500,
             color: statusConfig.titleColor,
             lineHeight: 1.3,
@@ -176,7 +176,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {statusConfig.subtitle && (
         <Typography
           sx={{
-            fontSize: '14px',
+            fontSize: '21px',
             color: '#8a8a86',
             textAlign: 'center',
             lineHeight: 1.65,
@@ -203,19 +203,19 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
             mb: 2,
           }}
         >
-          <Typography sx={{ fontSize: '12px', color: '#8a8a86' }}>あなたの前に</Typography>
-          <Typography sx={{ fontSize: '40px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
+          <Typography sx={{ fontSize: '18px', color: '#8a8a86' }}>あなたの前に</Typography>
+          <Typography sx={{ fontSize: '60px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
             {aheadCount}
           </Typography>
-          <Typography sx={{ fontSize: '12px', color: '#8a8a86' }}>組 待っています</Typography>
+          <Typography sx={{ fontSize: '18px', color: '#8a8a86' }}>組 待っています</Typography>
         </Box>
       )}
 
       {/* 人数 */}
       {ticket.party_size > 0 && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 2.5 }}>
-          <PeopleAltOutlinedIcon sx={{ fontSize: '14px', color: '#8a8a86' }} />
-          <Typography sx={{ fontSize: '13px', color: '#8a8a86' }}>
+          <PeopleAltOutlinedIcon sx={{ fontSize: '21px', color: '#8a8a86' }} />
+          <Typography sx={{ fontSize: '20px', color: '#8a8a86' }}>
             {ticket.party_size}名
           </Typography>
         </Box>
@@ -226,14 +226,14 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
         sx={{
           borderTop: `0.5px solid ${ticket.status === 'called' ? '#e8b870' : '#d8d6d0'}`,
           pt: 1.75,
-          maxWidth: 280,
+          maxWidth: 360,
           width: '100%',
           mt: 'auto',
         }}
       >
         <Typography
           sx={{
-            fontSize: '11px',
+            fontSize: '17px',
             color: ticket.status === 'called' ? '#c97028' : '#7a7874',
             lineHeight: 1.7,
             textAlign: 'left',
@@ -256,13 +256,13 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       >
         <Box
           sx={{
-            width: 5,
-            height: 5,
+            width: 8,
+            height: 8,
             borderRadius: '50%',
             bgcolor: '#b0aea8',
           }}
         />
-        <Typography sx={{ fontSize: '10px', color: '#8a8a86' }}>リアルタイム更新中</Typography>
+        <Typography sx={{ fontSize: '15px', color: '#8a8a86' }}>リアルタイム更新中</Typography>
       </Box>
     </Box>
   )
