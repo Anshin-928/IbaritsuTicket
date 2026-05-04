@@ -6,8 +6,6 @@ import {
   Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
   Divider, Typography, Box, IconButton,
 } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { usePathname, useRouter } from 'next/navigation'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
@@ -29,13 +27,13 @@ interface SidebarProps {
   boothId: string
   boothName: string
   onToggle: () => void
+  /** モバイルではtemporary（オーバーレイ）モードで表示する */
+  isTemporary?: boolean
 }
 
-export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle }: SidebarProps) {
+export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle, isTemporary = false }: SidebarProps) {
   const pathname = usePathname()
   const router   = useRouter()
-  const theme    = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const paperSx = {
     backgroundColor: SIDEBAR_BG,
@@ -49,11 +47,11 @@ export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle }:
 
   return (
     <Drawer
-      variant={isMobile ? 'temporary' : 'permanent'}
-      open={isMobile ? isSidebarOpen : undefined}
-      onClose={isMobile ? onToggle : undefined}
+      variant={isTemporary ? 'temporary' : 'permanent'}
+      open={isTemporary ? isSidebarOpen : undefined}
+      onClose={isTemporary ? onToggle : undefined}
       anchor="left"
-      sx={isMobile ? {
+      sx={isTemporary ? {
         '& .MuiDrawer-paper': { width: openDrawerWidth, ...paperSx },
       } : {
         width: isSidebarOpen ? openDrawerWidth : closedDrawerWidth,

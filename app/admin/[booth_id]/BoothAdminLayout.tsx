@@ -117,7 +117,7 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
       </AppBar>
 
       {/* サイドバー */}
-      <Sidebar isSidebarOpen={isSidebarOpen} boothId={boothId} boothName={boothName} onToggle={() => setSidebarOpen((p) => !p)} />
+      <Sidebar isSidebarOpen={isSidebarOpen} boothId={boothId} boothName={boothName} onToggle={() => setSidebarOpen((p) => !p)} isTemporary={isMobile} />
 
       {/* メインコンテンツ */}
       <Box
