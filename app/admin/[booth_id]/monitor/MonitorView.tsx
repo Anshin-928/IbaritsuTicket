@@ -58,40 +58,37 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
         {/* 左：呼び出し中 */}
         <Box sx={{
           bgcolor: '#ffffff', borderRight: '1px solid #e8e8e8',
-          p: '28px', display: 'flex', flexDirection: 'column', gap: 2,
+          p: { xs: '10px', md: '28px' }, display: 'flex', flexDirection: 'column', gap: { xs: 1, md: 2 },
           overflow: 'hidden',
         }}>
           {/* セクションラベル */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box sx={{ width: 4, height: 22, borderRadius: 99, bgcolor: '#356ae5', flexShrink: 0 }} />
-            <Typography sx={{ fontSize: '28px', fontWeight: 'bold', color: '#555', letterSpacing: '0.04em' }}>
-              ただいまご案内中の番号
+            <Box sx={{ width: 4, height: { xs: 16, md: 22 }, borderRadius: 99, bgcolor: '#356ae5', flexShrink: 0 }} />
+            <Typography sx={{ fontSize: { xs: '18px', md: '28px' }, fontWeight: 'bold', color: '#555', letterSpacing: '0.04em' }}>
+              <Box component="span" sx={{ display: { xs: 'inline', md: 'none' } }}>ご案内中の番号</Box>
+              <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>ただいまご案内中の番号</Box>
             </Typography>
           </Box>
 
           {/* 呼び出し中カード */}
           {calledTickets.length === 0 ? (
-            <Box sx={{ py: 4 }}>
-              <Typography sx={{ fontSize: '50px', color: '#bbb' }}>
-                {/* 現在お呼びしている番号はありません */}
-              </Typography>
-            </Box>
+            <Box sx={{ py: 2 }} />
           ) : (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: '8px', md: '12px' }, overflowY: 'auto' }}>
               {calledTickets.map((t) => (
                 <Box key={t.id} sx={{
                   position: 'relative',
-                  width: 160, height: 160,
+                  width: { xs: 100, md: 160 }, height: { xs: 100, md: 160 },
                   bgcolor: '#fdffff', border: '2.5px solid #2e5bc5', borderRadius: '10px',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1), 0 1px 6px rgba(0,0,0,0.1)',
                 }}>
-                  <Typography sx={{ fontSize: '80px', fontWeight: 500, color: '#1d3776', lineHeight: 1, mb: '20px' }}>
+                  <Typography sx={{ fontSize: { xs: '52px', md: '80px' }, fontWeight: 500, color: '#1d3776', lineHeight: 1, mb: { xs: '14px', md: '20px' } }}>
                     {t.ticket_number}
                   </Typography>
-                  <Box sx={{ position: 'absolute', bottom: 10, right: 12, display: 'flex', alignItems: 'center', gap: '3px' }}>
-                    <PeopleAltOutlinedIcon sx={{ fontSize: '16px', color: '#1d3776' }} />
-                    <Typography sx={{ fontSize: '18px', color: '#1d3776' }}>{t.party_size}人</Typography>
+                  <Box sx={{ position: 'absolute', bottom: { xs: 6, md: 10 }, right: { xs: 7, md: 12 }, display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <PeopleAltOutlinedIcon sx={{ fontSize: { xs: '12px', md: '16px' }, color: '#1d3776' }} />
+                    <Typography sx={{ fontSize: { xs: '13px', md: '18px' }, color: '#1d3776' }}>{t.party_size}人</Typography>
                   </Box>
                 </Box>
               ))}
@@ -101,14 +98,15 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
 
         {/* 右：順番待ち一覧 */}
         <Box sx={{
-          bgcolor: '#fafafa', pt: '28px', px: '28px', pb: 0,
-          display: 'flex', flexDirection: 'column', gap: 1.5,
+          bgcolor: '#fafafa',
+          pt: { xs: '10px', md: '28px' }, px: { xs: '10px', md: '28px' }, pb: 0,
+          display: 'flex', flexDirection: 'column', gap: { xs: 1, md: 1.5 },
           overflow: 'hidden',
         }}>
           {/* セクションラベル */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
-            <Box sx={{ width: 4, height: 22, borderRadius: 99, bgcolor: '#000000', flexShrink: 0 }} />
-            <Typography sx={{ fontSize: '28px', fontWeight: 'bold', color: '#555', letterSpacing: '0.04em' }}>
+            <Box sx={{ width: 4, height: { xs: 16, md: 22 }, borderRadius: 99, bgcolor: '#000000', flexShrink: 0 }} />
+            <Typography sx={{ fontSize: { xs: '18px', md: '28px' }, fontWeight: 'bold', color: '#555', letterSpacing: '0.04em' }}>
               順番待ちの方
             </Typography>
           </Box>
@@ -116,25 +114,23 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
           {/* 待ちカード */}
           <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
             {waitingTickets.length === 0 ? (
-              <Typography sx={{ fontSize: '50px', color: '#bbb', py: 2 }}>
-                {/* 順番待ちの方はいません */}
-              </Typography>
+              <Box sx={{ py: 2 }} />
             ) : (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: '8px', md: '12px' } }}>
                 {waitingTickets.map((t) => (
                   <Box key={t.id} sx={{
                     position: 'relative',
-                    width: 140, height: 140,
+                    width: { xs: 82, md: 140 }, height: { xs: 82, md: 140 },
                     bgcolor: '#fff', border: '2px solid #000000', borderRadius: '10px',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.1), 0 1px 6px rgba(0,0,0,0.1)',
                   }}>
-                    <Typography sx={{ fontSize: '64px', fontWeight: 500, color: '#1a1a1a', lineHeight: 1, mb: '20px' }}>
+                    <Typography sx={{ fontSize: { xs: '40px', md: '64px' }, fontWeight: 500, color: '#1a1a1a', lineHeight: 1, mb: { xs: '12px', md: '20px' } }}>
                       {t.ticket_number}
                     </Typography>
-                    <Box sx={{ position: 'absolute', bottom: 8, right: 10, display: 'flex', alignItems: 'center', gap: '3px' }}>
-                      <PeopleAltOutlinedIcon sx={{ fontSize: '14px', color: 'secondary' }} />
-                      <Typography sx={{ fontSize: '18px', color: 'secondary' }}>{t.party_size}人</Typography>
+                    <Box sx={{ position: 'absolute', bottom: { xs: 5, md: 8 }, right: { xs: 6, md: 10 }, display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <PeopleAltOutlinedIcon sx={{ fontSize: { xs: '10px', md: '14px' }, color: 'secondary' }} />
+                      <Typography sx={{ fontSize: { xs: '11px', md: '18px' }, color: 'secondary' }}>{t.party_size}人</Typography>
                     </Box>
                   </Box>
                 ))}
@@ -148,38 +144,38 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
       {onHoldTickets.length > 0 && (
         <Box sx={{
           borderTop: '1px solid #e8e8e8',
-          px: '28px', py: 2,
+          px: { xs: '10px', md: '28px' }, py: { xs: 1, md: 2 },
           bgcolor: '#fffcf5',
-          display: 'flex', flexDirection: 'column', gap: 1.25,
+          display: 'flex', flexDirection: 'column', gap: 1,
           flexShrink: 0,
           position: 'relative', zIndex: 1,
         }}>
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box sx={{ width: 4, height: 20, borderRadius: 99, bgcolor: '#ef6c00', flexShrink: 0 }} />
-              <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#bf5000', letterSpacing: '0.03em' }}>
+              <Box sx={{ width: 4, height: { xs: 16, md: 20 }, borderRadius: 99, bgcolor: '#ef6c00', flexShrink: 0 }} />
+              <Typography sx={{ fontSize: { xs: '16px', md: '24px' }, fontWeight: 'bold', color: '#bf5000', letterSpacing: '0.03em' }}>
                 不在のため保留中のお客様
               </Typography>
             </Box>
-            <Typography sx={{ fontSize: '20px', fontWeight: 'bold',color: '#bf5000', opacity: 0.75, ml: '12px', mt: '4px' }}>
-              先ほどお呼びしましたが不在でした。お戻りの際はスタッフまでお声がけください。
+            <Typography sx={{ fontSize: { xs: '14px', md: '20px' }, fontWeight: 'bold', color: '#bf5000', opacity: 0.75, ml: '12px', mt: '2px' }}>
+              先ほどお呼びしましたが不在でした。<Box component="br" sx={{ display: { xs: 'block', md: 'none' } }} />お戻りの際はスタッフまでお声がけください。
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: '10px', mt: '2px', pb: '4px' }}>
+          <Box sx={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', gap: '8px', pb: '4px' }}>
             {onHoldTickets.map((t) => (
               <Box key={t.id} sx={{
                 position: 'relative',
-                width: 100, minWidth: 100, height: 100,
+                width: { xs: 72, md: 100 }, minWidth: { xs: 72, md: 100 }, height: { xs: 72, md: 100 },
                 bgcolor: '#fff', border: '1.5px solid #ef6c00', borderRadius: '8px',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.1), 0 1px 6px rgba(0,0,0,0.1)',
               }}>
-                <Typography sx={{ fontSize: '50px', fontWeight: 'bold', color: '#bf5000', lineHeight: 1, mb: '18px' }}>
+                <Typography sx={{ fontSize: { xs: '34px', md: '50px' }, fontWeight: 'bold', color: '#bf5000', lineHeight: 1, mb: { xs: '12px', md: '18px' } }}>
                   {t.ticket_number}
                 </Typography>
-                <Box sx={{ position: 'absolute', bottom: 7, right: 9, display: 'flex', alignItems: 'center', gap: '2px' }}>
-                  <PeopleAltOutlinedIcon sx={{ fontSize: '16px', color: '#bf5000', opacity: 0.6 }} />
-                  <Typography sx={{ fontSize: '16px', color: '#bf5000', opacity: 0.6 }}>{t.party_size}人</Typography>
+                <Box sx={{ position: 'absolute', bottom: { xs: 4, md: 7 }, right: { xs: 5, md: 9 }, display: 'flex', alignItems: 'center', gap: '2px' }}>
+                  <PeopleAltOutlinedIcon sx={{ fontSize: { xs: '13px', md: '16px' }, color: '#bf5000', opacity: 0.6 }} />
+                  <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: '#bf5000', opacity: 0.6 }}>{t.party_size}人</Typography>
                 </Box>
               </Box>
             ))}

@@ -129,9 +129,9 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
               <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(0,0,0,0.12)' }} />
             </>
           )}
-          <Box display="flex" alignItems="center" gap={1} sx={{ px: 2.5 }}>
-            <HomeOutlinedIcon sx={{ fontSize: '32px', color: '#1a1a1a' }} />
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: '22px', color: '#1a1a1a', letterSpacing: '-0.2px' }}>
+          <Box display="flex" alignItems="center" gap={1} sx={{ flex: 1, minWidth: 0, px: { xs: 1, md: 2.5 } }}>
+            <HomeOutlinedIcon sx={{ fontSize: { xs: '32px', md: '32px' }, color: '#1a1a1a', flexShrink: 0 }} />
+            <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: { xs: '17px', md: '22px' }, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
               ホーム
             </Typography>
           </Box>

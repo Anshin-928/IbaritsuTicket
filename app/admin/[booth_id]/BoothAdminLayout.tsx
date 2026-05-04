@@ -7,7 +7,7 @@ import { Box, AppBar, Toolbar, IconButton, Typography, Divider } from '@mui/mate
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
-import Sidebar, { openDrawerWidth } from '@/components/Sidebar'
+import Sidebar from '@/components/Sidebar'
 import { allMenuItems, getBoothPath } from '@/config/adminMenu'
 import { MonitorBadgeProvider, useMonitorBadge } from '@/context/monitorBadge'
 
@@ -38,27 +38,37 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
     return pathname === path
   })
 
-  // モバイルではtemporaryドロワー（オーバーレイ）なのでAppBarはフル幅
-  const drawerWidth = isMobile ? 0 : (isSidebarOpen ? openDrawerWidth : 0)
-
   return (
     <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#ffffff' }}>
 
-      {/* AppBar */}
-      <AppBar
-        position="fixed"
-        elevation={0}
+      {/* サイドバー */}
+      <Sidebar isSidebarOpen={isSidebarOpen} boothId={boothId} boothName={boothName} onToggle={() => setSidebarOpen((p) => !p)} isTemporary={isMobile} />
+
+      {/* メインコンテンツ（AppBar + コンテンツ の flex column） */}
+      <Box
+        component="main"
         sx={{
-          width: `calc(100% - ${drawerWidth}px)`,
-          ml: `${drawerWidth}px`,
-          transition: 'width 0.2s, margin 0.2s',
-          backgroundColor: isMonitor ? '#274a79' : '#F0EEEB',
-          color: isMonitor ? '#fff' : '#1a1a1a',
-          borderBottom: 'none',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: 0,
+          minHeight: 0,
+          overflow: 'hidden',
         }}
       >
-        <Toolbar disableGutters sx={{ minHeight: '60px !important' }}>
+        {/* AppBar を static にしてフロー内に配置 → 高さが伸びてもコンテンツが隠れない */}
+        <AppBar
+          position="static"
+          elevation={0}
+          sx={{
+            backgroundColor: isMonitor ? '#274a79' : '#F0EEEB',
+            color: isMonitor ? '#fff' : '#1a1a1a',
+            borderBottom: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+            flexShrink: 0,
+          }}
+        >
+        <Toolbar disableGutters sx={{ minHeight: 60, flexWrap: 'wrap', py: 0.5 }}>
 
           {/* ハンバーガー（サイドバーが閉じているときのみ表示） */}
           {!isSidebarOpen && (
@@ -78,17 +88,29 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
 
           {isMonitor ? (
             /* 呼び出し画面専用 */
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', px: 2.5 }}>
-              {/* 左端：ブース名 */}
-              <Typography sx={{ fontSize: '26px', fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
+            <Box sx={{
+              flex: 1, minWidth: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              px: { xs: 1.5, md: 2.5 },
+              gap: { xs: '6px', md: '16px' },
+              py: 0.5,
+            }}>
+              {/* 左端：ブース名（長ければ折り返して全表示） */}
+              <Typography sx={{
+                fontSize: { xs: '19px', md: '26px' },
+                fontWeight: 700, color: '#fff', letterSpacing: '-0.3px',
+                lineHeight: 1.3,
+              }}>
                 {boothName}
               </Typography>
-              {/* 右端：待ち組数バッジ ＋ イベント名 */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              {/* 右端：待ち組数バッジ（内部は折り返し禁止） */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: '8px', md: '16px' }, flexShrink: 0 }}>
                 <Box sx={{
-                  display: 'flex', alignItems: 'center', gap: '6px',
+                  display: 'flex', alignItems: 'center', gap: { xs: '4px', md: '6px' },
                   bgcolor: '#fff', borderRadius: '50px',
-                  px: '18px', py: '6px',
+                  px: { xs: '12px', md: '18px' }, py: { xs: '5px', md: '6px' },
+                  whiteSpace: 'nowrap',
                 }}>
                   <Typography sx={{ fontSize: { xs: '22px', md: '28px' }, fontWeight: 700, color: '#274a79', lineHeight: 1 }}>
                     {waitingCount}
@@ -104,11 +126,14 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
             </Box>
           ) : (
             /* 通常ページ */
-            <Box display="flex" alignItems="center" gap={1} sx={{ px: 2.5 }}>
+            <Box display="flex" alignItems="center" gap={1} sx={{ flex: 1, minWidth: 0, px: { xs: 1.5, md: 2.5 }, py: 0.5 }}>
               {currentItem && (
                 <>
-                  <currentItem.Icon sx={{ fontSize: '32px', color: '#1E3A5F' }} />
-                  <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: '22px', color: '#1a1a1a', letterSpacing: '-0.2px' }}>
+                  <currentItem.Icon sx={{ fontSize: { xs: '24px', md: '32px' }, color: '#1E3A5F', flexShrink: 0 }} />
+                  <Typography variant="subtitle1" fontWeight="bold" sx={{
+                    fontSize: { xs: '19px', md: '22px' }, color: '#1a1a1a', letterSpacing: '-0.2px',
+                    lineHeight: 1.3,
+                  }}>
                     {currentItem.text}
                   </Typography>
                 </>
@@ -119,38 +144,20 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
         </Toolbar>
       </AppBar>
 
-      {/* サイドバー */}
-      <Sidebar isSidebarOpen={isSidebarOpen} boothId={boothId} boothName={boothName} onToggle={() => setSidebarOpen((p) => !p)} isTemporary={isMobile} />
-
-      {/* メインコンテンツ */}
+      {/* コンテンツ（AppBar の下に自然に続く） */}
       <Box
-        component="main"
         sx={{
           flexGrow: 1,
+          overflow: 'hidden',
+          ...(isMonitor ? {} : { overflowY: 'auto', p: { xs: 2, md: 4 } }),
           display: 'flex',
           flexDirection: 'column',
-          minWidth: 0,
-          minHeight: 0,
-          overflow: 'hidden',
         }}
       >
-        {/* AppBar の高さ分のスペーサー */}
-        <Toolbar sx={{ minHeight: '60px !important', flexShrink: 0 }} />
-
-        {/* コンテンツ */}
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflow: 'hidden',
-            ...(isMonitor ? {} : { overflowY: 'auto', p: { xs: 2, md: 4 } }),
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          {children}
-        </Box>
+        {children}
       </Box>
     </Box>
+  </Box>
   )
 }
 
