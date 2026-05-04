@@ -122,8 +122,8 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* 番号サークル（枠線のみ） */}
       <Box
         sx={{
-          width: 222,
-          height: 222,
+          width: 200,
+          height: 200,
           borderRadius: '50%',
           border: `1.5px ${statusConfig.borderStyle} ${statusConfig.accent}`,
           display: 'flex',
@@ -233,7 +233,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       >
         <Typography
           sx={{
-            fontSize: '15px',
+            fontSize: '11px',
             color: ticket.status === 'called' ? '#c97028' : '#7a7874',
             lineHeight: 1.7,
             textAlign: 'left',
@@ -323,7 +323,7 @@ function getStatusConfig(ticket: Ticket, aheadCount: number | null): StatusConfi
         subtitle:
           aheadCount === 0
             ? 'ブース付近でお待ちください'
-            : '番号をお呼びするまでしばらくお待ちください',
+            : '番号をお呼びするまで\nしばらくお待ちください',
       }
   }
 }
