@@ -102,9 +102,9 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* イベント名 */}
       <Typography
         sx={{
-          fontSize: '14px',
+          fontSize: '16px',
           fontWeight: 500,
-          color: '#b0aea8',
+          color: '#6b6b68',
           letterSpacing: '0.06em',
           mb: 0.5,
         }}
@@ -115,7 +115,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* ブース名 */}
       <Typography
         sx={{
-          fontSize: '22px',
+          fontSize: '24px',
           fontWeight: 600,
           color: '#1c1c1a',
           letterSpacing: '0.04em',

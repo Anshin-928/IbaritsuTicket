@@ -1,9 +1,11 @@
 // app/admin/[booth_id]/BoothAdminLayout.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Box, AppBar, Toolbar, IconButton, Typography, Divider } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import Sidebar, { openDrawerWidth } from '@/components/Sidebar'
 import { allMenuItems, getBoothPath } from '@/config/adminMenu'
@@ -20,13 +22,21 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
   const isMonitor = pathname === `/admin/${boothId}/monitor`
   const [isSidebarOpen, setSidebarOpen] = useState(!isMonitor)
   const { waitingCount } = useMonitorBadge()
+  const theme    = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  // モバイルではサイドバーを閉じた状態にする
+  useEffect(() => {
+    if (isMobile) setSidebarOpen(false)
+  }, [isMobile])
 
   const currentItem = allMenuItems.find((item) => {
     const path = getBoothPath(boothId, item.pathSegment)
     return pathname === path
   })
 
-  const drawerWidth = isSidebarOpen ? openDrawerWidth : 0
+  // モバイルではtemporaryドロワー（オーバーレイ）なのでAppBarはフル幅
+  const drawerWidth = isMobile ? 0 : (isSidebarOpen ? openDrawerWidth : 0)
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#ffffff' }}>
@@ -77,14 +87,14 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
                   bgcolor: '#fff', borderRadius: '50px',
                   px: '18px', py: '6px',
                 }}>
-                  <Typography sx={{ fontSize: '28px', fontWeight: 700, color: '#274a79', lineHeight: 1 }}>
+                  <Typography sx={{ fontSize: { xs: '22px', md: '28px' }, fontWeight: 700, color: '#274a79', lineHeight: 1 }}>
                     {waitingCount}
                   </Typography>
-                  <Typography sx={{ fontSize: '16px', fontWeight: 'bold', color: '#274a79', opacity: 0.75, mt: '2px' }}>
+                  <Typography sx={{ fontSize: { xs: '13px', md: '16px' }, fontWeight: 'bold', color: '#274a79', opacity: 0.75, mt: '2px' }}>
                     組待ち
                   </Typography>
                 </Box>
-                <Typography sx={{ fontSize: '18px', color: 'rgba(255,255,255,0.75)', letterSpacing: '0.04em' }}>
+                <Typography sx={{ fontSize: '18px', color: 'rgba(255,255,255,0.75)', letterSpacing: '0.04em', display: { xs: 'none', md: 'block' } }}>
                   いばらき × 立命館DAY 2026
                 </Typography>
               </Box>
@@ -129,7 +139,7 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
           sx={{
             flexGrow: 1,
             overflow: 'hidden',
-            ...(isMonitor ? {} : { overflowY: 'auto', p: 4 }),
+            ...(isMonitor ? {} : { overflowY: 'auto', p: { xs: 2, md: 4 } }),
             display: 'flex',
             flexDirection: 'column',
           }}

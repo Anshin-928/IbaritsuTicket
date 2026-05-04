@@ -6,6 +6,8 @@ import {
   Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
   Divider, Typography, Box, IconButton,
 } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { usePathname, useRouter } from 'next/navigation'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
@@ -32,12 +34,28 @@ interface SidebarProps {
 export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle }: SidebarProps) {
   const pathname = usePathname()
   const router   = useRouter()
+  const theme    = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  const paperSx = {
+    backgroundColor: SIDEBAR_BG,
+    borderRight: 'none',
+    color: SIDEBAR_TEXT,
+    display: 'flex',
+    flexDirection: 'column' as const,
+    overflowX: 'hidden' as const,
+    overflowY: 'hidden' as const,
+  }
 
   return (
     <Drawer
-      variant="permanent"
+      variant={isMobile ? 'temporary' : 'permanent'}
+      open={isMobile ? isSidebarOpen : undefined}
+      onClose={isMobile ? onToggle : undefined}
       anchor="left"
-      sx={{
+      sx={isMobile ? {
+        '& .MuiDrawer-paper': { width: openDrawerWidth, ...paperSx },
+      } : {
         width: isSidebarOpen ? openDrawerWidth : closedDrawerWidth,
         flexShrink: 0,
         whiteSpace: 'normal',
@@ -47,13 +65,7 @@ export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle }:
         '& .MuiDrawer-paper': {
           width: isSidebarOpen ? openDrawerWidth : closedDrawerWidth,
           transition: 'width 0.2s',
-          overflowX: 'hidden',
-          overflowY: 'hidden',
-          backgroundColor: SIDEBAR_BG,
-          borderRight: 'none',
-          color: SIDEBAR_TEXT,
-          display: 'flex',
-          flexDirection: 'column',
+          ...paperSx,
         },
       }}
     >

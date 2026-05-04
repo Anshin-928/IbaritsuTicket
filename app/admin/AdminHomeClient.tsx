@@ -1,7 +1,7 @@
 // app/admin/AdminHomeClient.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   Box, AppBar, Toolbar, IconButton, Typography, Drawer,
@@ -9,6 +9,8 @@ import {
   Divider, Alert, Dialog, DialogTitle, DialogContent,
   DialogActions, Button, TextField, CircularProgress,
 } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
@@ -34,9 +36,15 @@ interface Props {
 }
 
 export default function AdminHomeClient({ booths, fetchError }: Props) {
+  const theme    = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [isSidebarOpen, setSidebarOpen] = useState(true)
   const [expandedBoothIds, setExpandedBoothIds] = useState<Set<string>>(new Set())
   const [activeBoothId, setActiveBoothId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (isMobile) setSidebarOpen(false)
+  }, [isMobile])
 
   const toggleExpanded = (id: string) => {
     setExpandedBoothIds((prev) => {
@@ -89,7 +97,7 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
     }
   }
 
-  const drawerWidth = isSidebarOpen ? DRAWER_WIDTH : 0
+  const drawerWidth = isMobile ? 0 : (isSidebarOpen ? DRAWER_WIDTH : 0)
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#ffffff' }} onClick={clearActive}>
@@ -130,9 +138,22 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
 
       {/* ── Sidebar ─────────────────────────────────────── */}
       <Drawer
-        variant="permanent"
+        variant={isMobile ? 'temporary' : 'permanent'}
+        open={isMobile ? isSidebarOpen : undefined}
+        onClose={isMobile ? () => setSidebarOpen(false) : undefined}
         anchor="left"
-        sx={{
+        sx={isMobile ? {
+          '& .MuiDrawer-paper': {
+            width: DRAWER_WIDTH,
+            overflowX: 'hidden',
+            overflowY: 'hidden',
+            backgroundColor: SIDEBAR_BG,
+            borderRight: 'none',
+            color: SIDEBAR_TEXT,
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        } : {
           width: isSidebarOpen ? DRAWER_WIDTH : 0,
           flexShrink: 0,
           whiteSpace: 'normal',
@@ -337,7 +358,7 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
         sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}
       >
         <Toolbar sx={{ minHeight: '60px !important', flexShrink: 0 }} />
-        <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 4 }}>
+        <Box sx={{ flexGrow: 1, overflowY: 'auto', p: { xs: 2, md: 4 } }}>
 
           {fetchError && (
             <Alert severity="error" sx={{ mb: 3 }}>

@@ -69,9 +69,9 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
   }
 
   return (
-    <Box sx={{ display: 'flex', flexGrow: 1, minHeight: 0, overflow: 'hidden' }}>
+    <Box sx={{ display: { xs: 'block', md: 'flex' }, flexGrow: 1, minHeight: { xs: 'auto', md: 0 }, overflow: { xs: 'visible', md: 'hidden' } }}>
       {/* 左パネル */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, p: 2, gap: 2 }}>
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: { xs: 'auto', md: 0 }, p: 2, gap: 2 }}>
 
         {/* 上段：待ち組数 ＋ 発券モードトグル */}
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, alignItems: 'start' }}>
@@ -135,7 +135,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
         </Box>
 
         {/* タブ ＋ チケットリスト */}
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: { xs: 'auto', md: 0 } }}>
 
           {/* タブヘッダー */}
           <Box sx={{ display: 'flex', borderRadius: '4px 4px 0 0', overflow: 'hidden' }}>
@@ -171,7 +171,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
           <Box
             sx={{
               flex: 1,
-              overflowY: 'auto',
+              overflowY: { xs: 'visible', md: 'auto' },
               border: '1px solid #e0e0e0',
               borderTop: 'none',
               borderRadius: '0 0 4px 4px',
@@ -206,9 +206,10 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
         </Box>
       </Box>
 
-      {/* 点線の縦区切り */}
+      {/* 点線の縦区切り（デスクトップのみ） */}
       <Box
         sx={{
+          display: { xs: 'none', md: 'block' },
           width: 0,
           borderLeft: '2px dashed #c8c8c8',
           alignSelf: 'stretch',
@@ -218,7 +219,16 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
       />
 
       {/* 右パネル：発券フォーム */}
-      <Box sx={{ width: '22%', minWidth: 220, maxWidth: 320, display: 'flex', flexDirection: 'column', p: 2.5, gap: 2.5 }}>
+      <Box sx={{
+        width: { xs: '100%', md: '22%' },
+        minWidth: { xs: 0, md: 220 },
+        maxWidth: { xs: '100%', md: 320 },
+        display: 'flex',
+        flexDirection: 'column',
+        p: 2.5,
+        gap: 2.5,
+        borderTop: { xs: '2px dashed #c8c8c8', md: 'none' },
+      }}>
 
         <Typography sx={{ fontWeight: 'bold', fontSize: '1.2rem', color: '#111' }}>
           発券する
@@ -448,7 +458,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
           px: 1.5,
           py: 1.25,
           borderLeft: '1px solid #e8e8e8',
-          width: 160,
+          width: { xs: 120, md: 160 },
           flexShrink: 0,
         }}
       >
@@ -465,7 +475,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
                 borderColor: '#ccc',
                 fontSize: '0.85rem',
                 fontWeight: 'bold',
-                width: 128,
+                width: { xs: 96, md: 128 },
                 height: 40,
                 boxShadow: 'none',
                 whiteSpace: 'nowrap',
@@ -483,7 +493,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
                 color: '#fff',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                width: 128,
+                width: { xs: 96, md: 128 },
                 height: 60,
                 boxShadow: 'none',
                 '&:hover': { bgcolor: GREEN_BTN_HOVER, boxShadow: 'none' },
@@ -506,7 +516,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
                 borderColor: '#ef6c00',
                 fontSize: '0.85rem',
                 fontWeight: 'bold',
-                width: 128,
+                width: { xs: 96, md: 128 },
                 height: 40,
                 boxShadow: 'none',
                 whiteSpace: 'nowrap',
@@ -524,7 +534,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
                 color: '#fff',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                width: 128,
+                width: { xs: 96, md: 128 },
                 height: 60,
                 boxShadow: 'none',
                 '&:hover': { bgcolor: GREEN_BTN_HOVER, boxShadow: 'none' },
