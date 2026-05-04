@@ -102,25 +102,23 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* イベント名 */}
       <Typography
         sx={{
-          fontSize: '11px',
+          fontSize: '14px',
           fontWeight: 500,
           color: '#b0aea8',
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          mb: 0.75,
+          letterSpacing: '0.06em',
+          mb: 0.5,
         }}
       >
         いばらき ✕ 立命館DAY 2026
       </Typography>
 
-      {/* ブース名（控えめに上部へ） */}
+      {/* ブース名 */}
       <Typography
         sx={{
-          fontSize: '15px',
-          fontWeight: 500,
-          color: '#9a9894',
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
+          fontSize: '22px',
+          fontWeight: 600,
+          color: '#1c1c1a',
+          letterSpacing: '0.04em',
           mb: 4,
         }}
       >
@@ -197,7 +195,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
           fontWeight: 500,
           color: cfg.titleColor,
           lineHeight: 1.3,
-          mb: 1,
+          mb: 2.5,
           textAlign: 'center',
         }}
       >
