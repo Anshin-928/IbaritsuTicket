@@ -20,15 +20,18 @@ interface BoothAdminLayoutProps {
 function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayoutProps) {
   const pathname = usePathname()
   const isMonitor = pathname === `/admin/${boothId}/monitor`
-  const [isSidebarOpen, setSidebarOpen] = useState(!isMonitor)
+  // 初期値は必ず false（SSR とモバイル両方で closed スタートにする）
+  // → temporary Drawer が open=true → false と瞬時遷移することで
+  //   iOS Safari のアニメーション状態が壊れるのを防ぐ
+  const [isSidebarOpen, setSidebarOpen] = useState(false)
   const { waitingCount } = useMonitorBadge()
   const theme    = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
-  // モバイルではサイドバーを閉じた状態にする
+  // デスクトップ（非モバイル・非モニター）でのみ初期オープン
   useEffect(() => {
-    if (isMobile) setSidebarOpen(false)
-  }, [isMobile])
+    setSidebarOpen(!isMobile && !isMonitor)
+  }, [isMobile, isMonitor])
 
   const currentItem = allMenuItems.find((item) => {
     const path = getBoothPath(boothId, item.pathSegment)

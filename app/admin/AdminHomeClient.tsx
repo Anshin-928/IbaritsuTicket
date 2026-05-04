@@ -38,12 +38,14 @@ interface Props {
 export default function AdminHomeClient({ booths, fetchError }: Props) {
   const theme    = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const [isSidebarOpen, setSidebarOpen] = useState(true)
+  // 初期値は必ず false（iOS Safari でアニメーション状態が壊れるのを防ぐ）
+  const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [expandedBoothIds, setExpandedBoothIds] = useState<Set<string>>(new Set())
   const [activeBoothId, setActiveBoothId] = useState<string | null>(null)
 
+  // デスクトップでのみ初期オープン
   useEffect(() => {
-    if (isMobile) setSidebarOpen(false)
+    if (!isMobile) setSidebarOpen(true)
   }, [isMobile])
 
   const toggleExpanded = (id: string) => {
