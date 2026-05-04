@@ -71,7 +71,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
   return (
     <Box sx={{ display: { xs: 'block', md: 'flex' }, flexGrow: 1, minHeight: { xs: 'auto', md: 0 }, overflow: { xs: 'visible', md: 'hidden' } }}>
       {/* 左パネル */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: { xs: 'auto', md: 0 }, p: 2, gap: 2 }}>
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: { xs: 'auto', md: 0 }, p: { xs: 1, md: 2 }, gap: 2 }}>
 
         {/* 上段：待ち組数 ＋ 発券モードトグル */}
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, alignItems: 'start' }}>
@@ -225,7 +225,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
         maxWidth: { xs: '100%', md: 320 },
         display: 'flex',
         flexDirection: 'column',
-        p: 2.5,
+        p: { xs: 1.5, md: 2.5 },
         gap: 2.5,
         borderTop: { xs: '2px dashed #c8c8c8', md: 'none' },
       }}>
@@ -349,7 +349,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
         borderLeft: leftBorder,
         opacity: isPending ? 0.5 : 1,
         transition: 'opacity 0.2s',
-        minHeight: 96,
+        minHeight: { xs: 80, md: 96 },
         '&:last-child': { borderBottom: 'none' },
       }}
     >
@@ -359,7 +359,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          px: 1.5,
+          px: { xs: 0.5, md: 1.5 },
         }}
       >
         {isCalled ? (
@@ -370,12 +370,12 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
             sx={{
               color: '#999',
               borderColor: '#ddd',
-              my: 1,
-              width: 64,
-              height: 100,
+              my: { xs: 0.5, md: 1 },
+              width: { xs: 48, md: 64 },
+              height: { xs: 72, md: 100 },
               flexDirection: 'column',
               gap: 0.5,
-              fontSize: '0.85rem',
+              fontSize: { xs: '0.72rem', md: '0.85rem' },
               fontWeight: 'bold',
               boxShadow: 'none',
               whiteSpace: 'nowrap',
@@ -383,7 +383,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
               '&:hover': { bgcolor: 'rgba(0,0,0,0.04)', borderColor: '#bbb', boxShadow: 'none' },
             }}
           >
-            <UndoIcon sx={{ fontSize: 22 }} />
+            <UndoIcon sx={{ fontSize: { xs: 18, md: 22 } }} />
             取消
           </Button>
         ) : (
@@ -394,8 +394,8 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
             sx={{
               bgcolor: '#e53935',
               color: '#fff',
-              my: 1,
-              width: 64,
+              my: { xs: 0.5, md: 1 },
+              width: { xs: 48, md: 64 },
               height: 100,
               flexDirection: 'column',
               gap: 0.5,
@@ -414,7 +414,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
       </Box>
 
       {/* 中央：ステータス＋時刻 / 番号 / 人数 */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 2, py: 1.25, gap: 0.25 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', px: { xs: 1.5, md: 2 }, py: 1.25, gap: 0.25 }}>
 
         {/* 上行：バッジ（左）＋ 時刻（右） */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -438,7 +438,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
         </Box>
 
         {/* 整理券番号 */}
-        <Typography sx={{ fontWeight: 'bold', fontSize: '2.4rem', color: '#111', lineHeight: 1.1 }}>
+        <Typography sx={{ fontWeight: 'bold', fontSize: { xs: '2rem', md: '2.4rem' }, color: '#111', lineHeight: 1.1 }}>
           {ticket.ticket_number}
         </Typography>
 
@@ -455,10 +455,10 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
           flexDirection: 'column',
           justifyContent: 'center',
           gap: 0.75,
-          px: 1.5,
+          px: { xs: 0.75, md: 1.5 },
           py: 1.25,
           borderLeft: '1px solid #e8e8e8',
-          width: { xs: 120, md: 160 },
+          width: { xs: 108, md: 160 },
           flexShrink: 0,
         }}
       >
@@ -473,12 +473,14 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
               sx={{
                 color: '#666',
                 borderColor: '#ccc',
-                fontSize: '0.85rem',
+                fontSize: { xs: '0.78rem', md: '0.85rem' },
                 fontWeight: 'bold',
-                width: { xs: 96, md: 128 },
+                width: '100%',
                 height: 40,
                 boxShadow: 'none',
                 whiteSpace: 'nowrap',
+                // モバイルではstartIconを非表示にして文字を収める
+                '& .MuiButton-startIcon': { display: { xs: 'none', md: 'inline-flex' } },
                 '&:hover': { bgcolor: 'rgba(0,0,0,0.04)', borderColor: '#999', boxShadow: 'none' },
               }}
             >
@@ -493,7 +495,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
                 color: '#fff',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                width: { xs: 96, md: 128 },
+                width: '100%',
                 height: 60,
                 boxShadow: 'none',
                 '&:hover': { bgcolor: GREEN_BTN_HOVER, boxShadow: 'none' },
@@ -516,7 +518,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
                 borderColor: '#ef6c00',
                 fontSize: '0.85rem',
                 fontWeight: 'bold',
-                width: { xs: 96, md: 128 },
+                width: '100%',
                 height: 40,
                 boxShadow: 'none',
                 whiteSpace: 'nowrap',
@@ -534,7 +536,7 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
                 color: '#fff',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                width: { xs: 96, md: 128 },
+                width: '100%',
                 height: 60,
                 boxShadow: 'none',
                 '&:hover': { bgcolor: GREEN_BTN_HOVER, boxShadow: 'none' },
