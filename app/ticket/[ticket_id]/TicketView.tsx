@@ -4,8 +4,14 @@ import { useState, useEffect, useCallback } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
+import { keyframes } from '@mui/system'
 import { supabase } from '@/lib/supabase'
 import type { Booth, Ticket } from '@/types/database'
+
+const pulseAnim = keyframes`
+  0%   { transform: scale(1);   opacity: 0.5; }
+  100% { transform: scale(1.25); opacity: 0;   }
+`
 
 interface TicketViewProps {
   ticket: Ticket
@@ -78,7 +84,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
     return () => { supabase.removeChannel(channel) }
   }, [ticket.id, fetchTicket])
 
-  const statusConfig = getStatusConfig(ticket, aheadCount)
+  const cfg = getStatusConfig(ticket, aheadCount)
 
   return (
     <Box
@@ -93,87 +99,132 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
         py: 5,
       }}
     >
-      {/* ブース名 */}
+      {/* イベント名 */}
       <Typography
         sx={{
-          fontSize: '24px',
+          fontSize: '11px',
           fontWeight: 500,
-          color: '#1c1c1a',
-          mb: 0.5,
-          letterSpacing: '0.08em',
+          color: '#b0aea8',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          mb: 0.75,
+        }}
+      >
+        いばらき ✕ 立命館DAY 2026
+      </Typography>
+
+      {/* ブース名（控えめに上部へ） */}
+      <Typography
+        sx={{
+          fontSize: '15px',
+          fontWeight: 500,
+          color: '#9a9894',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          mb: 4,
         }}
       >
         {initialBooth.name}
       </Typography>
 
-      {/* 整理券ラベル */}
-      <Typography
-        sx={{
-          fontSize: '18px',
-          color: '#8a8a86',
-          mb: 3.5,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-        }}
-      >
-        整理券
-      </Typography>
-
-      {/* 番号サークル（枠線のみ） */}
+      {/* 番号サークル + パルスリング（called のみ） */}
       <Box
         sx={{
-          width: 168,
-          height: 168,
-          borderRadius: '50%',
-          border: `1.5px ${statusConfig.borderStyle} ${statusConfig.accent}`,
+          position: 'relative',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          mb: 3.5,
-          transition: 'border-color 0.4s ease',
+          width: 168,
+          height: 168,
+          mb: 4,
         }}
       >
-        <Typography
-          sx={{
-            fontSize: ticket.ticket_number >= 100 ? '72px' : '100px',
-            fontWeight: 500,
-            color: statusConfig.numberColor,
-            lineHeight: 1,
-            transition: 'color 0.4s ease',
-          }}
-        >
-          {ticket.ticket_number}
-        </Typography>
-      </Box>
+        {/* パルスリング（called 時のみ表示） */}
+        {ticket.status === 'called' && (
+          <>
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '50%',
+                border: `1.5px solid ${cfg.accent}`,
+                animation: `${pulseAnim} 1.8s ease-out infinite`,
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '50%',
+                border: `1.5px solid ${cfg.accent}`,
+                animation: `${pulseAnim} 1.8s ease-out 0.9s infinite`,
+              }}
+            />
+          </>
+        )}
 
-      {/* ステータスドット + タイトル */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+        {/* 番号サークル */}
         <Box
           sx={{
-            width: 11,
-            height: 11,
+            width: 168,
+            height: 168,
             borderRadius: '50%',
-            bgcolor: statusConfig.dotFilled ? statusConfig.accent : 'transparent',
-            border: statusConfig.dotFilled ? 'none' : `1.5px solid ${statusConfig.accent}`,
-            flexShrink: 0,
-            transition: 'background-color 0.4s ease, border-color 0.4s ease',
-          }}
-        />
-        <Typography
-          sx={{
-            fontSize: '26px',
-            fontWeight: 500,
-            color: statusConfig.titleColor,
-            lineHeight: 1.3,
-            whiteSpace: 'nowrap',
+            border: `1.5px ${cfg.borderStyle} ${cfg.accent}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'border-color 0.4s ease',
           }}
         >
-          {statusConfig.title}
-        </Typography>
+          <Typography
+            sx={{
+              fontSize: ticket.ticket_number >= 100 ? '72px' : '100px',
+              fontWeight: 500,
+              color: cfg.numberColor,
+              lineHeight: 1,
+              transition: 'color 0.4s ease',
+            }}
+          >
+            {ticket.ticket_number}
+          </Typography>
+        </Box>
       </Box>
 
+      {/* ステータスタイトル */}
+      <Typography
+        sx={{
+          fontSize: '26px',
+          fontWeight: 500,
+          color: cfg.titleColor,
+          lineHeight: 1.3,
+          mb: 1,
+          textAlign: 'center',
+        }}
+      >
+        {cfg.title}
+      </Typography>
+
+      {/* 待ち人数（枠なし・インライン表示） */}
+      {ticket.status === 'waiting' && aheadCount !== null && aheadCount > 0 && (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: 0.75,
+            mb: 1,
+          }}
+        >
+          <Typography sx={{ fontSize: '48px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
+            {aheadCount}
+          </Typography>
+          <Typography sx={{ fontSize: '18px', color: '#8a8a86' }}>
+            組が先に待っています
+          </Typography>
+        </Box>
+      )}
+
       {/* サブテキスト */}
-      {statusConfig.subtitle && (
+      {cfg.subtitle && (
         <Typography
           sx={{
             fontSize: '18px',
@@ -185,31 +236,8 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
             mb: 2.5,
           }}
         >
-          {statusConfig.subtitle}
+          {cfg.subtitle}
         </Typography>
-      )}
-
-      {/* 待ち人数 */}
-      {ticket.status === 'waiting' && aheadCount !== null && aheadCount > 0 && (
-        <Box
-          sx={{
-            border: '0.5px solid #d8d6d0',
-            borderRadius: '12px',
-            px: 3.5,
-            py: 1.5,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 0.25,
-            mb: 2,
-          }}
-        >
-          <Typography sx={{ fontSize: '17px', color: '#8a8a86' }}>あなたの前に</Typography>
-          <Typography sx={{ fontSize: '40px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
-            {aheadCount}
-          </Typography>
-          <Typography sx={{ fontSize: '17px', color: '#8a8a86' }}>組 待っています</Typography>
-        </Box>
       )}
 
       {/* 人数 */}
@@ -244,27 +272,6 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
           ※ お呼び出し後、一定時間内にお越しにならない場合は、キャンセル扱いとなる場合がございます。予めご了承ください。
         </Typography>
       </Box>
-
-      {/* リアルタイム更新インジケーター */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.75,
-          mt: 1.75,
-          opacity: 0.45,
-        }}
-      >
-        <Box
-          sx={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            bgcolor: '#b0aea8',
-          }}
-        />
-        <Typography sx={{ fontSize: '15px', color: '#8a8a86' }}>リアルタイム更新中</Typography>
-      </Box>
     </Box>
   )
 }
@@ -273,7 +280,6 @@ interface StatusConfig {
   accent: string
   borderStyle: 'solid' | 'dashed'
   numberColor: string
-  dotFilled: boolean
   titleColor: string
   title: string
   subtitle?: string
@@ -286,20 +292,18 @@ function getStatusConfig(ticket: Ticket, aheadCount: number | null): StatusConfi
         accent: '#c97028',
         borderStyle: 'solid',
         numberColor: '#c97028',
-        dotFilled: true,
-        titleColor: '#1c1c1a',
+        titleColor: '#c97028',
         title: 'お呼びしています',
-        subtitle: 'お待たせいたしました。\nお客様のご案内順となりましたので、受付までお越しください。',
+        subtitle: 'お待たせいたしました。\n受付までお越しください。',
       }
     case 'on_hold':
       return {
         accent: '#b0aea8',
         borderStyle: 'dashed',
         numberColor: '#8a8a86',
-        dotFilled: false,
         titleColor: '#6b6b68',
         title: '保留中',
-        subtitle: 'お呼びした際に不在でした。\nお戻りの際はスタッフまで\nお声がけください',
+        subtitle: 'お呼びした際に不在でした。\nお戻りの際はスタッフまでお声がけください。',
       }
     case 'done':
     case 'direct':
@@ -307,8 +311,7 @@ function getStatusConfig(ticket: Ticket, aheadCount: number | null): StatusConfi
         accent: '#7aaa6a',
         borderStyle: 'solid',
         numberColor: '#7aaa6a',
-        dotFilled: true,
-        titleColor: '#1c1c1a',
+        titleColor: '#7aaa6a',
         title: 'ご案内済みです',
         subtitle: 'ありがとうございました',
       }
@@ -318,13 +321,12 @@ function getStatusConfig(ticket: Ticket, aheadCount: number | null): StatusConfi
         accent: '#b0aea8',
         borderStyle: 'solid',
         numberColor: '#1c1c1a',
-        dotFilled: true,
         titleColor: '#1c1c1a',
         title: aheadCount === 0 ? 'まもなくご案内いたします' : '順番待ち中',
         subtitle:
           aheadCount === 0
             ? 'ブース付近でお待ちください'
-            : '番号をお呼びするまで\nしばらくお待ちください',
+            : undefined,
       }
   }
 }
