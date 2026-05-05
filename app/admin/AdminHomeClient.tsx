@@ -18,16 +18,18 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined'
 import TvOutlinedIcon from '@mui/icons-material/TvOutlined'
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined'
+import LogoutIcon from '@mui/icons-material/Logout'
 import Collapse from '@mui/material/Collapse'
 import { createBooth } from './actions'
 import type { Booth } from '@/types/database'
+import { createAuthClient } from '@/lib/supabase/client'
 
 const DRAWER_WIDTH    = 300
-const SIDEBAR_BG         = '#003224'
-const SIDEBAR_HEADER_BG  = '#00786C'
+const SIDEBAR_BG         = '#990100'
+const SIDEBAR_HEADER_BG  = '#c00000'  // ヘッダーは少し明るめ
 const SIDEBAR_TEXT       = 'rgba(255, 255, 255)'
 const SIDEBAR_TEXT_MUTED = 'rgba(255, 255, 255)'
-const SIDEBAR_ACTIVE_BG  = '#2a8c86'
+const SIDEBAR_ACTIVE_BG  = '#b80000'  // 選択中アイテムはヘッダーと同系色
 const SIDEBAR_HOVER_BG   = 'rgba(255, 255, 255, 0.15)'
 
 interface Props {
@@ -61,6 +63,13 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
   const clearActive = () => setActiveBoothId(null)
   const pathname = usePathname()
   const router   = useRouter()
+
+  const handleLogout = async () => {
+    const supabase = createAuthClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   // ── 新規ブース作成ダイアログ ─────────────────────────
   const [dialogOpen, setDialogOpen]   = useState(false)
@@ -351,6 +360,29 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
               </ListItem>
             )
           })}
+        </List>
+
+        {/* ログアウト */}
+        <Divider sx={{ borderColor: 'rgba(255,255,255,0.12)' }} />
+        <List sx={{ px: 0, py: 1 }}>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              onClick={handleLogout}
+              sx={{
+                minHeight: 44, ml: 0, mr: 2, px: 0,
+                borderRadius: '0 22px 22px 0',
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.12)' },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 0, ml: '20px', mr: '10px', justifyContent: 'center', color: 'rgba(255,255,255,0.55)' }}>
+                <LogoutIcon sx={{ fontSize: '22px' }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="ログアウト"
+                sx={{ '& .MuiTypography-root': { fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.65)' } }}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Drawer>
 

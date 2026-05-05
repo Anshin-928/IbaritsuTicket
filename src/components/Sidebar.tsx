@@ -9,7 +9,9 @@ import {
 import { usePathname, useRouter } from 'next/navigation'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
+import LogoutIcon from '@mui/icons-material/Logout'
 import { menuGroups, getBoothPath } from '@/config/adminMenu'
+import { createAuthClient } from '@/lib/supabase/client'
 
 export const closedDrawerWidth = 0
 export const openDrawerWidth   = 300
@@ -34,6 +36,13 @@ interface SidebarProps {
 export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle, isTemporary = false }: SidebarProps) {
   const pathname = usePathname()
   const router   = useRouter()
+
+  const handleLogout = async () => {
+    const supabase = createAuthClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   const paperSx = {
     backgroundColor: SIDEBAR_BG,
@@ -244,6 +253,27 @@ export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle, i
           </React.Fragment>
         ))}
       </List>
+
+      {/* ログアウト */}
+      <Divider sx={{ borderColor: 'rgba(255,255,255,0.12)' }} />
+      <Box sx={{ px: 0, py: 1 }}>
+        <ListItemButton
+          onClick={handleLogout}
+          sx={{
+            minHeight: 44, ml: 0, mr: 2, px: 0,
+            borderRadius: '0 22px 22px 0',
+            '&:hover': { backgroundColor: 'rgba(255,255,255,0.12)' },
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 0, ml: '20px', mr: '14px', justifyContent: 'center', color: 'rgba(255,255,255,0.55)' }}>
+            <LogoutIcon sx={{ fontSize: '22px' }} />
+          </ListItemIcon>
+          <ListItemText
+            primary="ログアウト"
+            sx={{ '& .MuiTypography-root': { fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.65)' } }}
+          />
+        </ListItemButton>
+      </Box>
 
     </Drawer>
   )
