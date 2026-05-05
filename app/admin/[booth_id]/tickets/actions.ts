@@ -1,7 +1,7 @@
 // app/admin/[booth_id]/tickets/actions.ts
 'use server'
 
-import { supabase } from '@/lib/supabase'
+import { createAuthServerClient } from '@/lib/supabase/server'
 
 export type PrepareTicketsResult =
   | { ok: true; boothName: string; tickets: { id: string; ticket_number: number }[] }
@@ -12,6 +12,10 @@ export async function prepareTickets(
   from: number,
   to: number,
 ): Promise<PrepareTicketsResult> {
+  const supabase = await createAuthServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: '認証が必要です' }
+
   if (from < 1 || to < from || to - from >= 200) {
     return { ok: false, error: '番号の範囲が不正です（最大200枚まで）' }
   }

@@ -2,13 +2,17 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { supabase } from '@/lib/supabase'
+import { createAuthServerClient } from '@/lib/supabase/server'
 
 export type IssueResult =
   | { type: 'issued'; ticketNumber: number }
   | { type: 'error'; message: string }
 
 export async function issueTicket(boothId: string, partySize: number): Promise<IssueResult> {
+  const supabase = await createAuthServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { type: 'error', message: '認証が必要です。' }
+
   // unissued（QR印刷済み）チケットを優先して使う
   const { data: unissuedTicket } = await supabase
     .from('tickets')

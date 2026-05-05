@@ -186,7 +186,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
                   </Box>
                 )}
                 {activeTickets.map((t) => (
-                  <TicketRow key={t.id} ticket={t} boothId={booth.id} />
+                  <TicketRow key={t.id} ticket={t} boothId={booth.id} onError={(msg) => setSnackbar({ message: msg, severity: 'error' })} />
                 ))}
               </>
             )}
@@ -198,7 +198,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
                   </Box>
                 )}
                 {onHoldTickets.map((t) => (
-                  <TicketRow key={t.id} ticket={t} boothId={booth.id} />
+                  <TicketRow key={t.id} ticket={t} boothId={booth.id} onError={(msg) => setSnackbar({ message: msg, severity: 'error' })} />
                 ))}
               </>
             )}
@@ -323,7 +323,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
 }
 
 // チケット1行分
-function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
+function TicketRow({ ticket, boothId, onError }: { ticket: Ticket; boothId: string; onError: (message: string) => void }) {
   const [isPending, startTransition] = useTransition()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const isCalled  = ticket.status === 'called'
@@ -366,7 +366,10 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
           <Button
             variant="outlined"
             disabled={isPending}
-            onClick={() => startTransition(() => returnToWaiting(ticket.id, boothId))}
+            onClick={() => startTransition(async () => {
+              try { await returnToWaiting(ticket.id, boothId) }
+              catch { onError('操作に失敗しました。再度お試しください。') }
+            })}
             sx={{
               color: '#999',
               borderColor: '#ddd',
@@ -391,7 +394,10 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
           <Button
             variant="contained"
             disabled={isPending}
-            onClick={() => startTransition(() => callSpecificTicket(ticket.id, boothId))}
+            onClick={() => startTransition(async () => {
+              try { await callSpecificTicket(ticket.id, boothId) }
+              catch { onError('操作に失敗しました。再度お試しください。') }
+            })}
             sx={{
               bgcolor: '#e53935',
               color: '#fff',
@@ -471,7 +477,10 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
               variant="outlined"
               disabled={isPending}
               startIcon={<UndoIcon fontSize="small" />}
-              onClick={() => startTransition(() => returnToWaiting(ticket.id, boothId))}
+              onClick={() => startTransition(async () => {
+                try { await returnToWaiting(ticket.id, boothId) }
+                catch { onError('操作に失敗しました。再度お試しください。') }
+              })}
               sx={{
                 color: '#666',
                 borderColor: '#ccc',
@@ -514,7 +523,10 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
             <Button
               variant="outlined"
               disabled={isPending}
-              onClick={() => startTransition(() => holdTicket(ticket.id, boothId))}
+              onClick={() => startTransition(async () => {
+                try { await holdTicket(ticket.id, boothId) }
+                catch { onError('操作に失敗しました。再度お試しください。') }
+              })}
               sx={{
                 color: '#ef6c00',
                 borderColor: '#ef6c00',
@@ -591,7 +603,10 @@ function TicketRow({ ticket, boothId }: { ticket: Ticket; boothId: string }) {
             disabled={isPending}
             onClick={() => {
               setConfirmOpen(false)
-              startTransition(() => completeTicket(ticket.id, boothId))
+              startTransition(async () => {
+                try { await completeTicket(ticket.id, boothId) }
+                catch { onError('操作に失敗しました。再度お試しください。') }
+              })
             }}
             sx={{ flex: 1, bgcolor: GREEN_BTN, boxShadow: 'none', fontWeight: 'bold', '&:hover': { bgcolor: GREEN_BTN_HOVER, boxShadow: 'none' } }}
           >

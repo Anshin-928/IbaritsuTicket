@@ -2,10 +2,14 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { supabase } from '@/lib/supabase'
+import { createAuthServerClient } from '@/lib/supabase/server'
 import type { BoothStatus } from '@/types/database'
 
 export async function toggleBoothStatus(boothId: string, currentStatus: BoothStatus) {
+  const supabase = await createAuthServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
   const newStatus: BoothStatus = currentStatus === 'empty' ? 'crowded' : 'empty'
 
   const { error } = await supabase
@@ -19,6 +23,10 @@ export async function toggleBoothStatus(boothId: string, currentStatus: BoothSta
 }
 
 export async function callNextTicket(boothId: string) {
+  const supabase = await createAuthServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
   // 1. 現在 'called' のチケットを 'done' に更新
   const { error: doneError } = await supabase
     .from('tickets')
