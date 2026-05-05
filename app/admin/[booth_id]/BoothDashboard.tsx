@@ -27,6 +27,7 @@ import {
   holdTicket,
 } from './actions'
 import { issueTicket } from './checkin/actions'
+import { playAnnouncement } from '@/lib/playAnnouncement'
 
 // デザイン
 const BLUE            = '#3b72bb'
@@ -59,7 +60,6 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
     startIssueTransition(async () => {
       const res = await issueTicket(booth.id, partySize)
       if (res.type === 'issued') {
-        new Audio('/issue.mp3').play().catch(() => {})
         setSnackbar({ message: `${res.ticketNumber}番 を発券しました`, severity: 'success' })
         setPartySize(1)
       } else {
@@ -395,7 +395,10 @@ function TicketRow({ ticket, boothId, onError }: { ticket: Ticket; boothId: stri
             variant="contained"
             disabled={isPending}
             onClick={() => startTransition(async () => {
-              try { await callSpecificTicket(ticket.id, boothId) }
+              try {
+                await callSpecificTicket(ticket.id, boothId)
+                playAnnouncement(ticket.ticket_number, ticket.party_size ?? 0)
+              }
               catch { onError('操作に失敗しました。再度お試しください。') }
             })}
             sx={{
