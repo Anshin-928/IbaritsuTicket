@@ -13,16 +13,16 @@ import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined'
 import TvOutlinedIcon from '@mui/icons-material/TvOutlined'
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined'
-import LogoutIcon from '@mui/icons-material/Logout'
 import Collapse from '@mui/material/Collapse'
 import { createBooth } from './actions'
 import type { Booth } from '@/types/database'
-import { createAuthClient } from '@/lib/supabase/client'
+import UserAvatarButton from '@/components/UserAvatarButton'
 
 const DRAWER_WIDTH    = 300
 const SIDEBAR_BG         = '#990100'
@@ -35,9 +35,12 @@ const SIDEBAR_HOVER_BG   = 'rgba(255, 255, 255, 0.15)'
 interface Props {
   booths: Booth[]
   fetchError?: string
+  children?: React.ReactNode
+  pageTitle?: string
+  showBackButton?: boolean
 }
 
-export default function AdminHomeClient({ booths, fetchError }: Props) {
+export default function AdminHomeClient({ booths, fetchError, children, pageTitle, showBackButton }: Props) {
   const theme    = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   // 初期値は必ず false（iOS Safari でアニメーション状態が壊れるのを防ぐ）
@@ -63,13 +66,6 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
   const clearActive = () => setActiveBoothId(null)
   const pathname = usePathname()
   const router   = useRouter()
-
-  const handleLogout = async () => {
-    const supabase = createAuthClient()
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
-  }
 
   // ── 新規ブース作成ダイアログ ─────────────────────────
   const [dialogOpen, setDialogOpen]   = useState(false)
@@ -138,11 +134,20 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
               <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(0,0,0,0.12)' }} />
             </>
           )}
-          <Box display="flex" alignItems="center" gap={1} sx={{ flex: 1, minWidth: 0, px: { xs: 1, md: 2.5 } }}>
-            <HomeOutlinedIcon sx={{ fontSize: { xs: '32px', md: '32px' }, color: '#1a1a1a', flexShrink: 0 }} />
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: { xs: '17px', md: '22px' }, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
-              ホーム
-            </Typography>
+          <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', px: { xs: 1, md: 2.5 } }}>
+            <Box display="flex" alignItems="center" gap={1} sx={{ flex: 1, minWidth: 0 }}>
+              {showBackButton ? (
+                <IconButton onClick={() => router.back()} size="small" sx={{ color: '#555', mr: 0.5, flexShrink: 0 }}>
+                  <ArrowBackIcon />
+                </IconButton>
+              ) : (
+                <HomeOutlinedIcon sx={{ fontSize: { xs: '32px', md: '32px' }, color: '#1a1a1a', flexShrink: 0 }} />
+              )}
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: { xs: '17px', md: '22px' }, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
+                {pageTitle ?? 'ホーム'}
+              </Typography>
+            </Box>
+            <UserAvatarButton />
           </Box>
         </Toolbar>
       </AppBar>
@@ -362,28 +367,6 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
           })}
         </List>
 
-        {/* ログアウト */}
-        <Divider sx={{ borderColor: 'rgba(255,255,255,0.12)' }} />
-        <List sx={{ px: 0, py: 1 }}>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              onClick={handleLogout}
-              sx={{
-                minHeight: 44, ml: 0, mr: 2, px: 0,
-                borderRadius: '0 22px 22px 0',
-                '&:hover': { backgroundColor: 'rgba(255,255,255,0.12)' },
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 0, ml: '20px', mr: '10px', justifyContent: 'center', color: 'rgba(255,255,255,0.55)' }}>
-                <LogoutIcon sx={{ fontSize: '22px' }} />
-              </ListItemIcon>
-              <ListItemText
-                primary="ログアウト"
-                sx={{ '& .MuiTypography-root': { fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.65)' } }}
-              />
-            </ListItemButton>
-          </ListItem>
-        </List>
       </Drawer>
 
       {/* ── メインコンテンツ ─────────────────────────────── */}
@@ -393,21 +376,22 @@ export default function AdminHomeClient({ booths, fetchError }: Props) {
       >
         <Toolbar sx={{ minHeight: '60px !important', flexShrink: 0 }} />
         <Box sx={{ flexGrow: 1, overflowY: 'auto', p: { xs: 2, md: 4 } }}>
-
-          {fetchError && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              データの取得に失敗しました: {fetchError}
-            </Alert>
-          )}
-
-          {booths.length === 0 && !fetchError && (
-            <Alert severity="info">ブースが登録されていません。</Alert>
-          )}
-
-          {booths.length > 0 && (
-            <Typography variant="body1" color="text.secondary">
-              左のサイドバーからブースを選択してください。
-            </Typography>
+          {children ?? (
+            <>
+              {fetchError && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  データの取得に失敗しました: {fetchError}
+                </Alert>
+              )}
+              {booths.length === 0 && !fetchError && (
+                <Alert severity="info">ブースが登録されていません。</Alert>
+              )}
+              {booths.length > 0 && (
+                <Typography variant="body1" color="text.secondary">
+                  左のサイドバーからブースを選択してください。
+                </Typography>
+              )}
+            </>
           )}
         </Box>
       </Box>
