@@ -75,7 +75,7 @@ export default function LoginClient() {
             <LockOutlinedIcon sx={{ color: '#fff', fontSize: 26 }} />
           </Box>
           <Typography
-            sx={{ fontSize: '13px', fontWeight: 600, color: '#888', letterSpacing: '0.08em', mb: 0.5 }}
+            sx={{ fontSize: '13px', fontWeight: 600, color: 'text.secondary', letterSpacing: '0.08em', mb: 0.5 }}
           >
             いばらき × 立命館DAY 2026
           </Typography>

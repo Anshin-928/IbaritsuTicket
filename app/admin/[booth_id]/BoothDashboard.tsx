@@ -1,7 +1,7 @@
 // app/admin/[booth_id]/BoothDashboard.tsx
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -47,6 +47,12 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
   const [partySize, setPartySize] = useState(1)
   const [issueSuspended, setIssueSuspended] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
+  const [announcementEnabled, setAnnouncementEnabled] = useState(true)
+
+  useEffect(() => {
+    const stored = localStorage.getItem(`announcement:${booth.id}`)
+    if (stored !== null) setAnnouncementEnabled(stored === 'true')
+  }, [booth.id])
   const [snackbar, setSnackbar] = useState<{ message: string; severity: 'success' | 'error' } | null>(null)
   const [issuePending, startIssueTransition] = useTransition()
 
@@ -186,7 +192,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
                   </Box>
                 )}
                 {activeTickets.map((t) => (
-                  <TicketRow key={t.id} ticket={t} boothId={booth.id} onError={(msg) => setSnackbar({ message: msg, severity: 'error' })} />
+                  <TicketRow key={t.id} ticket={t} boothId={booth.id} announcementEnabled={announcementEnabled} onError={(msg) => setSnackbar({ message: msg, severity: 'error' })} />
                 ))}
               </>
             )}
@@ -198,7 +204,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
                   </Box>
                 )}
                 {onHoldTickets.map((t) => (
-                  <TicketRow key={t.id} ticket={t} boothId={booth.id} onError={(msg) => setSnackbar({ message: msg, severity: 'error' })} />
+                  <TicketRow key={t.id} ticket={t} boothId={booth.id} announcementEnabled={announcementEnabled} onError={(msg) => setSnackbar({ message: msg, severity: 'error' })} />
                 ))}
               </>
             )}
@@ -323,7 +329,7 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
 }
 
 // チケット1行分
-function TicketRow({ ticket, boothId, onError }: { ticket: Ticket; boothId: string; onError: (message: string) => void }) {
+function TicketRow({ ticket, boothId, announcementEnabled, onError }: { ticket: Ticket; boothId: string; announcementEnabled: boolean; onError: (message: string) => void }) {
   const [isPending, startTransition] = useTransition()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const isCalled  = ticket.status === 'called'
@@ -397,7 +403,7 @@ function TicketRow({ ticket, boothId, onError }: { ticket: Ticket; boothId: stri
             onClick={() => startTransition(async () => {
               try {
                 await callSpecificTicket(ticket.id, boothId)
-                playAnnouncement(ticket.ticket_number, ticket.party_size ?? 0)
+                playAnnouncement(ticket.ticket_number, ticket.party_size ?? 0, announcementEnabled)
               }
               catch { onError('操作に失敗しました。再度お試しください。') }
             })}

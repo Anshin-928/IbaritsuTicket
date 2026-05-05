@@ -41,7 +41,7 @@ export default function CheckinForm({ booth }: CheckinFormProps) {
   }
 
   return (
-    <Box sx={{ maxWidth: 560, display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <Box sx={{ maxWidth: 720, display: 'flex', flexDirection: 'column', gap: 4 }}>
 
       <Divider />
 

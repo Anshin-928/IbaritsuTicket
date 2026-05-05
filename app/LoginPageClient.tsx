@@ -107,7 +107,7 @@ export default function LoginPageClient() {
         {/* モバイル用タイトル（画像がない場合に表示） */}
         <Box sx={{ display: { xs: 'block', md: 'none' }, textAlign: 'center', mb: 4 }}>
           <Typography
-            sx={{ fontSize: '12px', fontWeight: 600, color: '#888', letterSpacing: '0.1em', mb: 0.5 }}
+            sx={{ fontSize: '12px', fontWeight: 600, color: 'text.secondary', letterSpacing: '0.1em', mb: 0.5 }}
           >
             いばらき × 立命館DAY 2026
           </Typography>
@@ -131,7 +131,7 @@ export default function LoginPageClient() {
             >
               管理者ログイン
             </Typography>
-            <Typography sx={{ fontSize: '14px', color: '#888' }}>
+            <Typography sx={{ fontSize: '14px', color: 'text.secondary' }}>
               スタッフ専用ページです
             </Typography>
           </Box>

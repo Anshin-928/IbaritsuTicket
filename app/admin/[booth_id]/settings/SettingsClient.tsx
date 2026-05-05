@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper'
@@ -12,10 +12,13 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import CircularProgress from '@mui/material/CircularProgress'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
+import VolumeUpOutlinedIcon from '@mui/icons-material/VolumeUpOutlined'
 import { updateBoothName, resetEvent, deleteBoothById } from './actions'
 import type { Booth } from '@/types/database'
 
@@ -37,6 +40,17 @@ export default function SettingsClient({ booth }: Props) {
   const [deleteInput, setDeleteInput] = useState('')
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [deletePending, startDeleteTransition] = useTransition()
+
+  const [announcementEnabled, setAnnouncementEnabled] = useState(true)
+  useEffect(() => {
+    const stored = localStorage.getItem(`announcement:${booth.id}`)
+    if (stored !== null) setAnnouncementEnabled(stored === 'true')
+  }, [booth.id])
+
+  const handleAnnouncementToggle = (enabled: boolean) => {
+    setAnnouncementEnabled(enabled)
+    localStorage.setItem(`announcement:${booth.id}`, String(enabled))
+  }
 
   const handleDelete = () => {
     startDeleteTransition(async () => {
@@ -73,7 +87,7 @@ export default function SettingsClient({ booth }: Props) {
   const canReset = resetInput === CONFIRM_WORD
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ maxWidth: 800, mx: 'auto', width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
 
       {/* ── ブース設定 ── */}
       <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 3 }}>
@@ -110,6 +124,35 @@ export default function SettingsClient({ booth }: Props) {
             {nameMsg.text}
           </Alert>
         )}
+      </Paper>
+
+      {/* ── アナウンス設定 ── */}
+      <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <VolumeUpOutlinedIcon sx={{ color: 'text.secondary' }} />
+          <Typography fontWeight="bold" fontSize="1rem">アナウンス設定</Typography>
+        </Box>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={announcementEnabled}
+              onChange={(e) => handleAnnouncementToggle(e.target.checked)}
+              color="primary"
+            />
+          }
+          label={
+            <Box>
+              <Typography fontSize="0.95rem" fontWeight={600}>
+                自動音声アナウンス
+              </Typography>
+              <Typography fontSize="0.8rem" color="text.primary">
+                {announcementEnabled
+                  ? '呼出時に番号・人数をアナウンスします'
+                  : '呼出時に効果音のみ鳴らします'}
+              </Typography>
+            </Box>
+          }
+        />
       </Paper>
 
       {/* ── チケット全削除 ── */}

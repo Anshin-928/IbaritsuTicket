@@ -136,7 +136,7 @@ export default function AccountClient() {
   }
 
   return (
-    <Box sx={{ maxWidth: 480, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 680, mx: 'auto' }}>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
@@ -146,7 +146,7 @@ export default function AccountClient() {
 
       {/* アバターカード */}
       <Box sx={{ bgcolor: '#fff', borderRadius: 2, p: 3, mb: 2.5, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
-        <Typography fontWeight="bold" sx={{ fontSize: '14px', color: '#888', letterSpacing: '0.06em', mb: 2.5 }}>
+        <Typography fontWeight="bold" sx={{ fontSize: '1.2rem', mb: 2.5 }}>
           プロフィール画像
         </Typography>
 
@@ -191,7 +191,7 @@ export default function AccountClient() {
                 画像を変更
               </Button>
             </Tooltip>
-            <Typography sx={{ fontSize: '12px', color: '#aaa', mt: 0.75 }}>
+            <Typography sx={{ fontSize: '14px', color: 'text.secondary', mt: 0.75 }}>
               自動で 400px・WebP に圧縮されます
             </Typography>
           </Box>
@@ -200,7 +200,7 @@ export default function AccountClient() {
 
       {/* プロフィールカード */}
       <Box sx={{ bgcolor: '#fff', borderRadius: 2, p: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
-        <Typography fontWeight="bold" sx={{ fontSize: '14px', color: '#888', letterSpacing: '0.06em', mb: 2.5 }}>
+        <Typography fontWeight="bold" sx={{ fontSize: '1.2rem', mb: 2.5 }}>
           アカウント情報
         </Typography>
 
@@ -234,7 +234,7 @@ export default function AccountClient() {
             bgcolor: '#990100',
             boxShadow: 'none',
             fontWeight: 'bold',
-            '&:hover': { bgcolor: '#7a0000', boxShadow: 'none' },
+            '&:hover': { bgcolor: '#7c0000', boxShadow: 'none' },
           }}
         >
           {saving ? (

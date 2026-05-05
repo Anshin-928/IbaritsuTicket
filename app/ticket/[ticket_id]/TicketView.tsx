@@ -215,7 +215,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
           <Typography sx={{ fontSize: '48px', fontWeight: 500, color: '#1c1c1a', lineHeight: 1 }}>
             {aheadCount}
           </Typography>
-          <Typography sx={{ fontSize: '18px', color: '#8a8a86' }}>
+          <Typography sx={{ fontSize: '18px', color: 'text.secondary' }}>
             組が先に待っています
           </Typography>
         </Box>
@@ -226,7 +226,7 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
         <Typography
           sx={{
             fontSize: '18px',
-            color: '#8a8a86',
+            color: 'text.secondary',
             textAlign: 'center',
             lineHeight: 1.65,
             whiteSpace: 'pre-line',
@@ -241,8 +241,8 @@ export default function TicketView({ ticket: initialTicket, booth: initialBooth 
       {/* 人数 */}
       {ticket.party_size > 0 && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 2.5 }}>
-          <PeopleAltOutlinedIcon sx={{ fontSize: '21px', color: '#8a8a86' }} />
-          <Typography sx={{ fontSize: '20px', color: '#8a8a86' }}>
+          <PeopleAltOutlinedIcon sx={{ fontSize: '21px', color: 'text.secondary' }} />
+          <Typography sx={{ fontSize: '20px', color: 'text.secondary' }}>
             {ticket.party_size}名
           </Typography>
         </Box>

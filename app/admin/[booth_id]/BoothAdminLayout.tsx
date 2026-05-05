@@ -7,7 +7,7 @@ import { Box, AppBar, Toolbar, IconButton, Typography, Divider } from '@mui/mate
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import Sidebar from '@/components/Sidebar'
 import UserAvatarButton from '@/components/UserAvatarButton'
 import { allMenuItems, getBoothPath } from '@/config/adminMenu'
@@ -132,7 +132,7 @@ function BoothAdminLayoutInner({ children, boothId, boothName }: BoothAdminLayou
               <Box display="flex" alignItems="center" gap={1} sx={{ flex: 1, minWidth: 0 }}>
                 {pathname === `/admin/${boothId}/account` ? (
                   <>
-                    <PersonOutlinedIcon sx={{ fontSize: { xs: '24px', md: '32px' }, color: '#1E3A5F', flexShrink: 0 }} />
+                    <AccountCircleOutlinedIcon sx={{ fontSize: { xs: '24px', md: '32px' }, color: '#1E3A5F', flexShrink: 0 }} />
                     <Typography variant="subtitle1" fontWeight="bold" sx={{
                       fontSize: { xs: '19px', md: '22px' }, color: '#1a1a1a', letterSpacing: '-0.2px',
                       lineHeight: 1.3,

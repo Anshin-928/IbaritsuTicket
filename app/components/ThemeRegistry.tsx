@@ -17,9 +17,9 @@ const theme = createTheme({
       paper:   '#FFFFFF', // カード・メインコンテンツ背景
     },
     text: {
-      primary:   '#333333',
-      secondary: '#666666',
-      disabled:  '#aaaaaa',
+      primary:   '#1a1a1a',
+      secondary: '#444444',
+      disabled:  '#888888',
     },
     divider: '#E8E8E8',
     success: { main: '#34A853' },
@@ -30,6 +30,15 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: { backgroundImage: 'none' },
+      },
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          '&.Mui-disabled': {
+            color: '#444444',
+          },
+        },
       },
     },
     MuiDrawer: {

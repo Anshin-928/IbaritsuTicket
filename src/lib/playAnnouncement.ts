@@ -20,7 +20,7 @@ function processQueue(): void {
   })
 }
 
-export function playAnnouncement(ticketNumber: number, partySize: number): void {
+export function playAnnouncement(ticketNumber: number, partySize: number, announcementEnabled = true): void {
   const urls: string[] = []
 
   const wasEmpty = !isPlaying && queue.length === 0
@@ -28,19 +28,21 @@ export function playAnnouncement(ticketNumber: number, partySize: number): void 
     urls.push('/issue.mp3')
   }
 
-  if (ticketNumber >= 1 && ticketNumber <= 999) {
-    urls.push(`/audio/x番でお待ちの/${ticketNumber}番でお待ちの.wav`)
-  }
+  if (announcementEnabled) {
+    if (ticketNumber >= 1 && ticketNumber <= 999) {
+      urls.push(`/audio/x番でお待ちの/${ticketNumber}番でお待ちの.wav`)
+    }
 
-  if (partySize >= 1 && partySize <= 10) {
-    urls.push(`/audio/y名様/${partySize}名様.wav`)
-  }
+    if (partySize >= 1 && partySize <= 10) {
+      urls.push(`/audio/y名様/${partySize}名様.wav`)
+    }
 
-  if (partySize >= 11) {
-    urls.push(`/audio/y名様/お客様.wav`)
-  }
+    if (partySize >= 11) {
+      urls.push(`/audio/y名様/お客様.wav`)
+    }
 
-  urls.push('/audio/受付までお越しください.wav')
+    urls.push('/audio/受付までお越しください.wav')
+  }
 
   queue.push(urls)
   processQueue()
