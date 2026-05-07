@@ -6,7 +6,6 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import type { Booth } from '@/types/database'
@@ -26,12 +25,6 @@ export default function BoothCard({ booth }: BoothCardProps) {
                 <Typography variant="h6" fontWeight="bold">
                   {booth.name}
                 </Typography>
-                <Chip
-                  label={booth.status === 'empty' ? '直行モード' : '整理券モード'}
-                  color={booth.status === 'empty' ? 'success' : 'warning'}
-                  size="small"
-                  sx={{ mt: 1 }}
-                />
               </Box>
               <ArrowForwardIosIcon fontSize="small" color="action" />
             </Box>

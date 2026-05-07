@@ -43,7 +43,7 @@ export default function ReceptionForm({ booth }: ReceptionFormProps) {
   }
 
   if (result) {
-    return <ResultScreen result={result} boothName={booth.name} />
+    return <ResultScreen result={result} />
   }
 
   return (
@@ -109,42 +109,8 @@ export default function ReceptionForm({ booth }: ReceptionFormProps) {
   )
 }
 
-function ResultScreen({
-  result,
-  boothName,
-}: {
-  result: ReceptionResult
-  boothName: string
-}) {
-  if (result.type === 'direct') {
-    return (
-      <Box
-        sx={{
-          minHeight: '100dvh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 4,
-          px: 3,
-          bgcolor: 'success.light',
-        }}
-      >
-        <CheckCircleOutlineIcon sx={{ fontSize: 100, color: 'success.dark' }} />
-        <Typography variant="h3" fontWeight="bold" textAlign="center" color="success.dark">
-          受付完了！
-        </Typography>
-        <Typography variant="h5" textAlign="center" color="success.dark">
-          そのまま{boothName}へお進みください
-        </Typography>
-        <Typography variant="body1" color="success.dark" sx={{ opacity: 0.7 }}>
-          しばらくしますと自動的に戻ります
-        </Typography>
-      </Box>
-    )
-  }
-
-  if (result.type === 'crowded') {
+function ResultScreen({ result }: { result: ReceptionResult }) {
+  if (result.type === 'issued') {
     return (
       <Box
         sx={{

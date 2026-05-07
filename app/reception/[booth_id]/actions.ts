@@ -4,73 +4,37 @@
 import { supabase } from '@/lib/supabase'
 
 export type ReceptionResult =
-  | { type: 'direct' }
-  | { type: 'crowded'; ticketNumber: number }
+  | { type: 'issued'; ticketNumber: number }
   | { type: 'error'; message: string }
 
 export async function submitReception(
   boothId: string,
   partySize: number
 ): Promise<ReceptionResult> {
-  // 現時点のブース情報を取得
-  const { data: booth, error: boothError } = await supabase
-    .from('booths')
-    .select('status')
-    .eq('id', boothId)
+  // 最小 ticket_number の unissued チケットを waiting に更新
+  const { data: ticket, error: fetchError } = await supabase
+    .from('tickets')
+    .select('id, ticket_number')
+    .eq('booth_id', boothId)
+    .eq('status', 'unissued')
+    .order('ticket_number', { ascending: true })
+    .limit(1)
     .single()
 
-  if (boothError || !booth) {
-    return { type: 'error', message: 'ブース情報の取得に失敗しました。' }
+  if (fetchError || !ticket) {
+    return { type: 'error', message: '現在受付を停止しています。\nスタッフにお声がけください。' }
   }
 
-  if (booth.status === 'empty') {
-    // パターンA: 直行モード → direct ログを INSERT
-    const { data: maxRow } = await supabase
-      .from('tickets')
-      .select('ticket_number')
-      .eq('booth_id', boothId)
-      .order('ticket_number', { ascending: false })
-      .limit(1)
-      .single()
-
-    const nextNumber = maxRow ? maxRow.ticket_number + 1 : 1
-
-    const { error } = await supabase.from('tickets').insert({
-      booth_id: boothId,
-      ticket_number: nextNumber,
+  const { error: updateError } = await supabase
+    .from('tickets')
+    .update({
+      status: 'waiting',
       party_size: partySize,
-      status: 'direct',
+      updated_at: new Date().toISOString(),
     })
+    .eq('id', ticket.id)
 
-    if (error) return { type: 'error', message: '受付処理に失敗しました。' }
+  if (updateError) return { type: 'error', message: '受付処理に失敗しました。' }
 
-    return { type: 'direct' }
-  } else {
-    // パターンB: 整理券モード → 最小 ticket_number の unissued チケットを waiting に更新
-    const { data: ticket, error: fetchError } = await supabase
-      .from('tickets')
-      .select('id, ticket_number')
-      .eq('booth_id', boothId)
-      .eq('status', 'unissued')
-      .order('ticket_number', { ascending: true })
-      .limit(1)
-      .single()
-
-    if (fetchError || !ticket) {
-      return { type: 'error', message: '現在受付を停止しています。\nスタッフにお声がけください。' }
-    }
-
-    const { error: updateError } = await supabase
-      .from('tickets')
-      .update({
-        status: 'waiting',
-        party_size: partySize,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', ticket.id)
-
-    if (updateError) return { type: 'error', message: '受付処理に失敗しました。' }
-
-    return { type: 'crowded', ticketNumber: ticket.ticket_number }
-  }
+  return { type: 'issued', ticketNumber: ticket.ticket_number }
 }

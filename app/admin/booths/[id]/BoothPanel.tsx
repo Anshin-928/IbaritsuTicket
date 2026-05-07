@@ -5,16 +5,13 @@ import { useTransition } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import Switch from '@mui/material/Switch'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import CircularProgress from '@mui/material/CircularProgress'
 import PersonIcon from '@mui/icons-material/Person'
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
 import type { Booth, Ticket } from '@/types/database'
-import { toggleBoothStatus, callNextTicket } from '../actions'
+import { callNextTicket } from '../actions'
 
 interface BoothPanelProps {
   booth: Booth
@@ -23,14 +20,7 @@ interface BoothPanelProps {
 }
 
 export default function BoothPanel({ booth, calledTicket, waitingCount }: BoothPanelProps) {
-  const [isTogglePending, startToggleTransition] = useTransition()
   const [isCallPending, startCallTransition] = useTransition()
-
-  const handleToggle = () => {
-    startToggleTransition(() => {
-      toggleBoothStatus(booth.id, booth.status)
-    })
-  }
 
   const handleCallNext = () => {
     startCallTransition(() => {
@@ -48,16 +38,10 @@ export default function BoothPanel({ booth, calledTicket, waitingCount }: BoothP
         gap: 4,
       }}
     >
-      {/* ブース名 & モード */}
-      <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1}>
-        <Typography variant="h4" fontWeight="bold">
-          {booth.name}
-        </Typography>
-        <Chip
-          label={booth.status === 'empty' ? '直行モード' : '整理券モード'}
-          color={booth.status === 'empty' ? 'success' : 'warning'}
-        />
-      </Box>
+      {/* ブース名 */}
+      <Typography variant="h4" fontWeight="bold">
+        {booth.name}
+      </Typography>
 
       <Divider />
 
@@ -80,29 +64,6 @@ export default function BoothPanel({ booth, calledTicket, waitingCount }: BoothP
       </Box>
 
       <Divider />
-
-      {/* モード切替 */}
-      <Box>
-        <Typography variant="subtitle2" color="text.secondary" mb={1}>
-          モード切替
-        </Typography>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={booth.status === 'crowded'}
-              onChange={handleToggle}
-              disabled={isTogglePending}
-              color="warning"
-              size="medium"
-            />
-          }
-          label={
-            <Typography variant="body1">
-              {isTogglePending ? '更新中...' : booth.status === 'empty' ? '空き（直行）' : '混雑（整理券）'}
-            </Typography>
-          }
-        />
-      </Box>
 
       {/* 呼び出しボタン */}
       <Button
