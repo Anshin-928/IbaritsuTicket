@@ -16,7 +16,7 @@ interface BoothCardProps {
 
 export default function BoothCard({ booth }: BoothCardProps) {
   return (
-    <Link href={`/booth/${booth.id}`} style={{ textDecoration: 'none' }}>
+    <Link href={`/admin/${booth.id}`} style={{ textDecoration: 'none' }}>
       <Card elevation={2} sx={{ height: '100%' }}>
         <CardActionArea sx={{ height: '100%', p: 1 }}>
           <CardContent>
