@@ -6,8 +6,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   Box, AppBar, Toolbar, IconButton, Typography, Drawer,
   List, ListItem, ListItemButton, ListItemIcon, ListItemText,
-  Divider, Alert, Dialog, DialogTitle, DialogContent,
-  DialogActions, Button, TextField, CircularProgress, Paper,
+  Divider, Dialog, DialogTitle, DialogContent,
+  DialogActions, Button, TextField, CircularProgress,
 } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -32,22 +32,12 @@ const SIDEBAR_TEXT_MUTED = 'rgba(255, 255, 255)'
 const SIDEBAR_ACTIVE_BG  = '#b80000'  // 選択中アイテムはヘッダーと同系色
 const SIDEBAR_HOVER_BG   = 'rgba(255, 255, 255, 0.15)'
 
-type TicketSummary = {
-  booth_id: string
-  status: string
-  party_size: number
-}
-
 interface Props {
   booths: Booth[]
-  fetchError?: string
-  children?: React.ReactNode
-  pageTitle?: string
-  showBackButton?: boolean
-  ticketSummaries?: TicketSummary[]
+  children: React.ReactNode
 }
 
-export default function AdminHomeClient({ booths, fetchError, children, pageTitle, showBackButton, ticketSummaries = [] }: Props) {
+export default function AdminHomeClient({ booths, children }: Props) {
   const theme    = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   // 初期値は必ず false（iOS Safari でアニメーション状態が壊れるのを防ぐ）
@@ -143,15 +133,15 @@ export default function AdminHomeClient({ booths, fetchError, children, pageTitl
           )}
           <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', px: { xs: 1, md: 2.5 } }}>
             <Box display="flex" alignItems="center" gap={1} sx={{ flex: 1, minWidth: 0 }}>
-              {showBackButton ? (
+              {pathname === '/admin' ? (
+                <HomeOutlinedIcon sx={{ fontSize: { xs: '32px', md: '32px' }, color: '#1a1a1a', flexShrink: 0 }} />
+              ) : (
                 <IconButton onClick={() => router.back()} size="small" sx={{ color: '#555', mr: 0.5, flexShrink: 0 }}>
                   <ArrowBackIcon />
                 </IconButton>
-              ) : (
-                <HomeOutlinedIcon sx={{ fontSize: { xs: '32px', md: '32px' }, color: '#1a1a1a', flexShrink: 0 }} />
               )}
               <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: { xs: '17px', md: '22px' }, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
-                {pageTitle ?? 'ホーム'}
+                {pathname === '/admin/account' ? 'マイアカウント' : 'ホーム'}
               </Typography>
             </Box>
             <UserAvatarButton />
@@ -294,7 +284,7 @@ export default function AdminHomeClient({ booths, fetchError, children, pageTitl
                   selected={isSelected}
                   sx={{
                     minHeight: 44, ml: 0, mr: 2, px: 0,
-                    borderRadius: '0 22px 22px 0',
+                    borderRadius: '0 9999px 9999px 0',
                     backgroundColor: isActive && !isSelected ? SIDEBAR_HOVER_BG : undefined,
                     '&:hover': { backgroundColor: isSelected ? SIDEBAR_ACTIVE_BG : SIDEBAR_HOVER_BG },
                     '&.Mui-selected': {
@@ -383,107 +373,7 @@ export default function AdminHomeClient({ booths, fetchError, children, pageTitl
       >
         <Toolbar sx={{ minHeight: '60px !important', flexShrink: 0 }} />
         <Box sx={{ flexGrow: 1, overflowY: 'auto', p: { xs: 2, md: 4 } }}>
-          {children ?? (
-            <>
-              {fetchError && (
-                <Alert severity="error" sx={{ mb: 3 }}>
-                  データの取得に失敗しました: {fetchError}
-                </Alert>
-              )}
-              {booths.length === 0 && !fetchError && (
-                <Alert severity="info">ブースが登録されていません。</Alert>
-              )}
-              {booths.length > 0 && !fetchError && (() => {
-                const totalWaiting = ticketSummaries.filter(t => t.status === 'waiting' || t.status === 'called').length
-                const totalPeople  = ticketSummaries.filter(t => t.status === 'waiting' || t.status === 'called').reduce((s, t) => s + (t.party_size ?? 0), 0)
-                const totalDone    = ticketSummaries.filter(t => t.status === 'done').length
-
-                return (
-                  <Box>
-                    {/* ブース一覧 */}
-                    <Typography fontWeight="bold" sx={{ mb: 2, fontSize: '0.9rem', color: 'text.secondary', letterSpacing: '0.05em' }}>
-                      ブース一覧
-                    </Typography>
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 2, mb: 4 }}>
-                      {booths.map(booth => {
-                        const bt       = ticketSummaries.filter(t => t.booth_id === booth.id)
-                        const waiting  = bt.filter(t => t.status === 'waiting').length
-                        const called   = bt.filter(t => t.status === 'called').length
-                        const onHold   = bt.filter(t => t.status === 'on_hold').length
-                        const doneToday = bt.filter(t => t.status === 'done').length
-                        return (
-                          <Paper
-                            key={booth.id}
-                            elevation={0}
-                            onClick={() => router.push(`/admin/${booth.id}/dashboard`)}
-                            sx={{
-                              border: '1px solid #e0e0e0',
-                              borderRadius: 2,
-                              p: 2.5,
-                              cursor: 'pointer',
-                              transition: 'box-shadow 0.15s, border-color 0.15s',
-                              '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.1)', borderColor: '#bbb' },
-                            }}
-                          >
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                              <Typography fontWeight="bold" fontSize="1.05rem" sx={{ lineHeight: 1.3 }}>
-                                {booth.name}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                              <Typography sx={{ fontSize: '2.8rem', fontWeight: 'bold', lineHeight: 1 }}>
-                                {waiting + called}
-                              </Typography>
-                              <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>組待ち</Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', gap: 1.5, mt: 1.25, flexWrap: 'wrap' }}>
-                              {called > 0 && (
-                                <Typography sx={{ fontSize: '0.8rem', color: '#e53935', fontWeight: 600 }}>
-                                  呼出中 {called}組
-                                </Typography>
-                              )}
-                              {onHold > 0 && (
-                                <Typography sx={{ fontSize: '0.8rem', color: '#ef6c00', fontWeight: 600 }}>
-                                  保留 {onHold}組
-                                </Typography>
-                              )}
-                              <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
-                                本日完了 {doneToday}組
-                              </Typography>
-                            </Box>
-                          </Paper>
-                        )
-                      })}
-                    </Box>
-
-                    {/* 全体集計 */}
-                    <Typography fontWeight="bold" sx={{ mb: 2, fontSize: '0.9rem', color: 'text.secondary', letterSpacing: '0.05em' }}>
-                      全体集計
-                    </Typography>
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
-                      {[
-                        { label: '現在の待ち', value: totalWaiting, unit: '組' },
-                        { label: '待ち人数',   value: totalPeople,  unit: '人' },
-                        { label: '本日完了',   value: totalDone,    unit: '組' },
-                      ].map(({ label, value, unit }) => (
-                        <Paper
-                          key={label}
-                          elevation={0}
-                          sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 2.5, textAlign: 'center' }}
-                        >
-                          <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary', mb: 1 }}>{label}</Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 0.5 }}>
-                            <Typography sx={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: 1 }}>{value}</Typography>
-                            <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>{unit}</Typography>
-                          </Box>
-                        </Paper>
-                      ))}
-                    </Box>
-                  </Box>
-                )
-              })()}
-            </>
-          )}
+          {children}
         </Box>
       </Box>
 

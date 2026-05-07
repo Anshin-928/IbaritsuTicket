@@ -1,10 +1,10 @@
-// app/admin/page.tsx
+// app/admin/(home)/page.tsx
 import { supabase } from '@/lib/supabase'
-import AdminHomeClient from './AdminHomeClient'
+import HomeContent from './HomeContent'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminPage() {
+export default async function AdminHomePage() {
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
 
@@ -20,10 +20,10 @@ export default async function AdminPage() {
   ]
 
   return (
-    <AdminHomeClient
+    <HomeContent
       booths={booths ?? []}
-      fetchError={error?.message}
       ticketSummaries={ticketSummaries}
+      fetchError={error?.message}
     />
   )
 }
