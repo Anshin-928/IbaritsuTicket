@@ -50,8 +50,10 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
   const [announcementEnabled, setAnnouncementEnabled] = useState(true)
 
   useEffect(() => {
-    const stored = localStorage.getItem(`announcement:${booth.id}`)
-    if (stored !== null) setAnnouncementEnabled(stored === 'true')
+    const storedSuspended = localStorage.getItem(`issueSuspended:${booth.id}`)
+    if (storedSuspended !== null) setIssueSuspended(storedSuspended === 'true')
+    const storedAnnouncement = localStorage.getItem(`announcement:${booth.id}`)
+    if (storedAnnouncement !== null) setAnnouncementEnabled(storedAnnouncement === 'true')
   }, [booth.id])
   const [snackbar, setSnackbar] = useState<{ message: string; severity: 'success' | 'error' } | null>(null)
   const [issuePending, startIssueTransition] = useTransition()
@@ -115,7 +117,10 @@ export default function BoothDashboard({ booth, tickets }: BoothDashboardProps) 
                 return (
                   <Box
                     key={opt.label}
-                    onClick={() => setIssueSuspended(opt.suspended)}
+                    onClick={() => {
+                      setIssueSuspended(opt.suspended)
+                      localStorage.setItem(`issueSuspended:${booth.id}`, String(opt.suspended))
+                    }}
                     sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, cursor: 'pointer', userSelect: 'none' }}
                   >
                     <Box
