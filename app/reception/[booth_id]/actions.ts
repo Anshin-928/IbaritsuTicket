@@ -11,6 +11,10 @@ export async function submitReception(
   boothId: string,
   partySize: number
 ): Promise<ReceptionResult> {
+  if (!Number.isInteger(partySize) || partySize < 1 || partySize > 10) {
+    return { type: 'error', message: '人数の入力が不正です。' }
+  }
+
   // 最小 ticket_number の unissued チケットを waiting に更新
   const { data: ticket, error: fetchError } = await supabase
     .from('tickets')

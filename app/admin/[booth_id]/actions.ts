@@ -18,6 +18,7 @@ export async function callSpecificTicket(ticketId: string, boothId: string) {
     .from('tickets')
     .update({ status: 'called', updated_at: new Date().toISOString() })
     .eq('id', ticketId)
+    .eq('booth_id', boothId)
 
   if (error) throw new Error(error.message)
   revalidate(boothId)
@@ -33,6 +34,7 @@ export async function completeTicket(ticketId: string, boothId: string) {
     .from('tickets')
     .update({ status: 'done', updated_at: new Date().toISOString() })
     .eq('id', ticketId)
+    .eq('booth_id', boothId)
 
   if (error) throw new Error(error.message)
   revalidate(boothId)
@@ -48,6 +50,7 @@ export async function returnToWaiting(ticketId: string, boothId: string) {
     .from('tickets')
     .update({ status: 'waiting', updated_at: new Date().toISOString() })
     .eq('id', ticketId)
+    .eq('booth_id', boothId)
 
   if (error) throw new Error(error.message)
   revalidate(boothId)
@@ -63,6 +66,7 @@ export async function holdTicket(ticketId: string, boothId: string) {
     .from('tickets')
     .update({ status: 'on_hold', updated_at: new Date().toISOString() })
     .eq('id', ticketId)
+    .eq('booth_id', boothId)
 
   if (error) throw new Error(error.message)
   revalidate(boothId)
