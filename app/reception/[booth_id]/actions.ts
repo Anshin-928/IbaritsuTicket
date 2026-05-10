@@ -15,30 +15,18 @@ export async function submitReception(
     return { type: 'error', message: '人数の入力が不正です。' }
   }
 
-  // 最小 ticket_number の unissued チケットを waiting に更新
-  const { data: ticket, error: fetchError } = await supabase
-    .from('tickets')
-    .select('id, ticket_number')
-    .eq('booth_id', boothId)
-    .eq('status', 'unissued')
-    .order('ticket_number', { ascending: true })
-    .limit(1)
-    .single()
+  // PostgreSQL 関数でアトミックに発券（TOCTOU 競合なし）
+  const { data, error } = await supabase.rpc('issue_next_ticket', {
+    p_booth_id: boothId,
+    p_party_size: partySize,
+  })
 
-  if (fetchError || !ticket) {
+  if (error) return { type: 'error', message: '受付処理に失敗しました。' }
+
+  // 空配列 = unissued チケットなし
+  if (!data || data.length === 0) {
     return { type: 'error', message: '現在受付を停止しています。\nスタッフにお声がけください。' }
   }
 
-  const { error: updateError } = await supabase
-    .from('tickets')
-    .update({
-      status: 'waiting',
-      party_size: partySize,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', ticket.id)
-
-  if (updateError) return { type: 'error', message: '受付処理に失敗しました。' }
-
-  return { type: 'issued', ticketNumber: ticket.ticket_number }
+  return { type: 'issued', ticketNumber: data[0].ticket_number }
 }

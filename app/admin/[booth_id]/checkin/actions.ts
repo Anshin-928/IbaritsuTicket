@@ -13,55 +13,19 @@ export async function issueTicket(boothId: string, partySize: number): Promise<I
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { type: 'error', message: '認証が必要です。' }
 
-  // unissued（QR印刷済み）チケットを優先して使う
-  const { data: unissuedTicket } = await supabase
-    .from('tickets')
-    .select('id, ticket_number')
-    .eq('booth_id', boothId)
-    .eq('status', 'unissued')
-    .order('ticket_number', { ascending: true })
-    .limit(1)
-    .single()
-
-  if (unissuedTicket) {
-    const { error } = await supabase
-      .from('tickets')
-      .update({
-        status: 'waiting',
-        party_size: partySize,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', unissuedTicket.id)
-
-    if (error) return { type: 'error', message: '発券処理に失敗しました。' }
-
-    revalidatePath(`/admin/${boothId}`)
-    revalidatePath(`/admin/${boothId}/checkin`)
-    return { type: 'issued', ticketNumber: unissuedTicket.ticket_number }
-  }
-
-  // unissued がない場合は番号を採番して新規 waiting を作成
-  // （後でPDF生成した際にこの番号のQRが自動的に紐づく）
-  const { data: maxRow } = await supabase
-    .from('tickets')
-    .select('ticket_number')
-    .eq('booth_id', boothId)
-    .order('ticket_number', { ascending: false })
-    .limit(1)
-    .single()
-
-  const nextNumber = maxRow ? maxRow.ticket_number + 1 : 1
-
-  const { error } = await supabase.from('tickets').insert({
-    booth_id: boothId,
-    ticket_number: nextNumber,
-    party_size: partySize,
-    status: 'waiting',
+  // PostgreSQL 関数でアトミックに発券（TOCTOU 競合なし）
+  // unissued チケット優先、なければ連番で新規作成
+  const { data, error } = await supabase.rpc('issue_ticket_admin', {
+    p_booth_id: boothId,
+    p_party_size: partySize,
   })
 
   if (error) return { type: 'error', message: '発券処理に失敗しました。' }
+  if (!data || data.length === 0) {
+    return { type: 'error', message: '発券処理に失敗しました。' }
+  }
 
   revalidatePath(`/admin/${boothId}`)
   revalidatePath(`/admin/${boothId}/checkin`)
-  return { type: 'issued', ticketNumber: nextNumber }
+  return { type: 'issued', ticketNumber: data[0].ticket_number }
 }

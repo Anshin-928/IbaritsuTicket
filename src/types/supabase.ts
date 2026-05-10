@@ -81,7 +81,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      issue_next_ticket: {
+        Args: { p_booth_id: string; p_party_size: number }
+        Returns: {
+          ticket_number: number
+        }[]
+      }
+      issue_ticket_admin: {
+        Args: { p_booth_id: string; p_party_size: number }
+        Returns: {
+          ticket_id: string
+          ticket_number: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
