@@ -9,6 +9,10 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { createAuthClient } from '@/lib/supabase/client'
 import LogoPair from '@/components/LogoPair'
 
@@ -16,8 +20,9 @@ export default function LoginPageClient() {
   const router = useRouter()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState<string | null>(null)
+  const [loading, setLoading]       = useState(false)
+  const [error, setError]           = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -159,7 +164,7 @@ export default function LoginPageClient() {
           {/* パスワード */}
           <TextField
             label="パスワード"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             fullWidth
             required
             value={password}
@@ -167,6 +172,19 @@ export default function LoginPageClient() {
             disabled={loading}
             autoComplete="current-password"
             sx={{ mb: 3 }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    edge="end"
+                    aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示する'}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
 
           {/* ログインボタン */}
