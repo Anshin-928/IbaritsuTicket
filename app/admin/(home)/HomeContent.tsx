@@ -5,6 +5,10 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper'
 import Alert from '@mui/material/Alert'
+import Chip from '@mui/material/Chip'
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined'
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import type { Booth } from '@/types/database'
 
 type TicketSummary = {
@@ -51,6 +55,8 @@ export default function HomeContent({ booths, ticketSummaries, fetchError }: Pro
           const called    = bt.filter(t => t.status === 'called').length
           const onHold    = bt.filter(t => t.status === 'on_hold').length
           const doneToday = bt.filter(t => t.status === 'done').length
+          const bgColor = called > 0 ? '#fff8f8' : onHold > 0 ? '#fff8f0' : 'transparent'
+
           return (
             <Paper
               key={booth.id}
@@ -61,6 +67,7 @@ export default function HomeContent({ booths, ticketSummaries, fetchError }: Pro
                 borderRadius: 2,
                 p: 2.5,
                 cursor: 'pointer',
+                backgroundColor: bgColor,
                 transition: 'box-shadow 0.15s, border-color 0.15s',
                 '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.1)', borderColor: '#bbb' },
               }}
@@ -76,20 +83,26 @@ export default function HomeContent({ booths, ticketSummaries, fetchError }: Pro
                 </Typography>
                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>組待ち</Typography>
               </Box>
-              <Box sx={{ display: 'flex', gap: 1.5, mt: 1.25, flexWrap: 'wrap' }}>
+              <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexWrap: 'wrap' }}>
                 {called > 0 && (
-                  <Typography sx={{ fontSize: '0.8rem', color: '#e53935', fontWeight: 600 }}>
-                    呼出中 {called}組
-                  </Typography>
+                  <Chip
+                    size="small"
+                    label={`呼出中 ${called}組`}
+                    sx={{ bgcolor: '#e53935', color: '#fff', fontWeight: 700, fontSize: '0.75rem', height: 22 }}
+                  />
                 )}
                 {onHold > 0 && (
-                  <Typography sx={{ fontSize: '0.8rem', color: '#ef6c00', fontWeight: 600 }}>
-                    保留 {onHold}組
-                  </Typography>
+                  <Chip
+                    size="small"
+                    label={`保留 ${onHold}組`}
+                    sx={{ bgcolor: '#ef6c00', color: '#fff', fontWeight: 700, fontSize: '0.75rem', height: 22 }}
+                  />
                 )}
-                <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
-                  本日完了 {doneToday}組
-                </Typography>
+                <Chip
+                  size="small"
+                  label={`完了 ${doneToday}組`}
+                  sx={{ bgcolor: '#f0f0f0', color: 'text.secondary', fontSize: '0.75rem', height: 22 }}
+                />
               </Box>
             </Paper>
           )
@@ -102,16 +115,19 @@ export default function HomeContent({ booths, ticketSummaries, fetchError }: Pro
       </Typography>
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
         {[
-          { label: '現在の待ち', value: totalWaiting, unit: '組' },
-          { label: '待ち人数',   value: totalPeople,  unit: '人' },
-          { label: '本日完了',   value: totalDone,    unit: '組' },
-        ].map(({ label, value, unit }) => (
+          { label: '現在の待ち', value: totalWaiting, unit: '組', icon: <PeopleOutlinedIcon sx={{ fontSize: '1.3rem', color: 'text.secondary' }} /> },
+          { label: '待ち人数',   value: totalPeople,  unit: '人', icon: <PersonOutlinedIcon sx={{ fontSize: '1.3rem', color: 'text.secondary' }} /> },
+          { label: '本日完了',   value: totalDone,    unit: '組', icon: <CheckCircleOutlinedIcon sx={{ fontSize: '1.3rem', color: 'text.secondary' }} /> },
+        ].map(({ label, value, unit, icon }) => (
           <Paper
             key={label}
             elevation={0}
             sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 2.5, textAlign: 'center' }}
           >
-            <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary', mb: 1 }}>{label}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mb: 1 }}>
+              {icon}
+              <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>{label}</Typography>
+            </Box>
             <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 0.5 }}>
               <Typography sx={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: 1 }}>{value}</Typography>
               <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>{unit}</Typography>
