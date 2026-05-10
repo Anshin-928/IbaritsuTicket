@@ -55,7 +55,7 @@ export default function LoginPageClient() {
       {/* 背景画像（モバイル：全画面絶対配置、デスクトップ：左パネル） */}
       <Box
         sx={{
-          position: { xs: 'fixed', md: 'relative' },
+          position: { xs: 'absolute', md: 'relative' },
           inset: { xs: 0, md: 'auto' },
           flex: { md: 1 },
           overflow: 'hidden',
