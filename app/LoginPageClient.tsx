@@ -43,14 +43,21 @@ export default function LoginPageClient() {
   }
 
   return (
-    <Box sx={{ display: 'flex', height: '100dvh', bgcolor: '#f5f5f5' }}>
-
-      {/* 左側：画像（md以上のみ表示） */}
+    <Box
+      sx={{
+        display: 'flex',
+        height: '100dvh',
+        position: 'relative',
+        alignItems: { xs: 'center', md: 'stretch' },
+        justifyContent: { xs: 'center', md: 'flex-start' },
+      }}
+    >
+      {/* 背景画像（モバイル：全画面絶対配置、デスクトップ：左パネル） */}
       <Box
         sx={{
-          flex: 1,
-          position: 'relative',
-          display: { xs: 'none', md: 'block' },
+          position: { xs: 'absolute', md: 'relative' },
+          inset: { xs: 0, md: 'auto' },
+          flex: { md: 1 },
           overflow: 'hidden',
         }}
       >
@@ -61,19 +68,15 @@ export default function LoginPageClient() {
           style={{ objectFit: 'cover' }}
           priority
         />
-        {/* 画像上のグラデーションオーバーレイ */}
+        {/* グラデーションオーバーレイ */}
         <Box
           sx={{
             position: 'absolute', inset: 0,
-            background: 'linear-gradient(135deg, rgba(26,46,74,0.55) 0%, rgba(26,46,74,0.15) 100%)',
+            background: 'linear-gradient(135deg, rgba(26,46,74,0.6) 0%, rgba(26,46,74,0.2) 100%)',
           }}
         />
-        {/* 画像上のテキスト */}
-        <Box
-          sx={{
-            position: 'absolute', bottom: 48, left: 48,
-          }}
-        >
+        {/* デスクトップ時のみ画像上テキストを表示 */}
+        <Box sx={{ display: { xs: 'none', md: 'block' }, position: 'absolute', bottom: 48, left: 48 }}>
           <Typography
             sx={{ fontSize: '20px', fontWeight: 600, color: 'rgba(255,255,255,0.9)', letterSpacing: '0.1em', mb: 1 }}
           >
@@ -94,35 +97,26 @@ export default function LoginPageClient() {
         </Box>
       </Box>
 
-      {/* 右側：ログインフォーム */}
+      {/* ログインフォーム */}
       <Box
         sx={{
-          width: { xs: '100%', md: '440px' },
+          position: 'relative',
+          zIndex: 1,
           flexShrink: 0,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           bgcolor: '#fff',
+          // モバイル：ポップアップカード風
+          width: { xs: 'calc(100% - 40px)', md: '440px' },
+          maxWidth: { xs: 400, md: 'none' },
+          borderRadius: { xs: 3, md: 0 },
+          boxShadow: { xs: '0 8px 48px rgba(0,0,0,0.3)', md: '-4px 0 24px rgba(0,0,0,0.08)' },
           px: { xs: 3, md: 5 },
-          py: 4,
-          boxShadow: { md: '-4px 0 24px rgba(0,0,0,0.08)' },
+          py: { xs: 4, md: 4 },
         }}
       >
-        {/* モバイル用タイトル（画像がない場合に表示） */}
-        <Box sx={{ display: { xs: 'block', md: 'none' }, textAlign: 'center', mb: 4 }}>
-          <Typography
-            sx={{ fontSize: '12px', fontWeight: 600, color: 'text.secondary', letterSpacing: '0.1em', mb: 0.5 }}
-          >
-            いばらき × 立命館DAY 2026
-          </Typography>
-          <Typography
-            sx={{ fontSize: '22px', fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}
-          >
-            順番待ちシステム
-          </Typography>
-        </Box>
-
         <Box component="form" onSubmit={handleLogin} sx={{ width: '100%', maxWidth: 360 }}>
           {/* ロゴ */}
           <Box sx={{ mb: 4 }}>
@@ -172,18 +166,20 @@ export default function LoginPageClient() {
             disabled={loading}
             autoComplete="current-password"
             sx={{ mb: 3 }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    edge="end"
-                    aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示する'}
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                      aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示する'}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
           />
 

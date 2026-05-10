@@ -209,7 +209,6 @@ export default function TicketsClient({ boothId }: Props) {
       >
         {/* セクション① 番号範囲 */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-          <StepBadge n={1} />
           <Typography fontWeight="bold" fontSize="0.95rem">
             整理券の番号範囲を指定
           </Typography>
