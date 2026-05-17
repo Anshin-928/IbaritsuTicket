@@ -1,10 +1,13 @@
-const queue: string[][] = []
+type AudioItem = { url: string; volume: number }
+
+const queue: AudioItem[][] = []
 let isPlaying = false
 
-function playSequential(urls: string[], onDone: () => void): void {
-  if (urls.length === 0) { onDone(); return }
-  const [first, ...rest] = urls
-  const audio = new Audio(first)
+function playSequential(items: AudioItem[], onDone: () => void): void {
+  if (items.length === 0) { onDone(); return }
+  const [first, ...rest] = items
+  const audio = new Audio(first.url)
+  audio.volume = first.volume
   audio.onended = () => playSequential(rest, onDone)
   audio.onerror = () => playSequential(rest, onDone)
   audio.play().catch(() => playSequential(rest, onDone))
@@ -13,37 +16,40 @@ function playSequential(urls: string[], onDone: () => void): void {
 function processQueue(): void {
   if (isPlaying || queue.length === 0) return
   isPlaying = true
-  const urls = queue.shift()!
-  playSequential(urls, () => {
+  const items = queue.shift()!
+  playSequential(items, () => {
     isPlaying = false
     processQueue()
   })
 }
 
+const SE_VOLUME = 0.3
+const ANNOUNCE_VOLUME = 1.0
+
 export function playAnnouncement(ticketNumber: number, partySize: number, announcementEnabled = true): void {
-  const urls: string[] = []
+  const items: AudioItem[] = []
 
   const wasEmpty = !isPlaying && queue.length === 0
   if (wasEmpty) {
-    urls.push('/issue.mp3')
+    items.push({ url: '/issue.mp3', volume: SE_VOLUME })
   }
 
   if (announcementEnabled) {
     if (ticketNumber >= 1 && ticketNumber <= 999) {
-      urls.push(`/audio/x番でお待ちの/${ticketNumber}番でお待ちの.wav`)
+      items.push({ url: `/audio/x番でお待ちの/${ticketNumber}番でお待ちの.wav`, volume: ANNOUNCE_VOLUME })
     }
 
     if (partySize >= 1 && partySize <= 10) {
-      urls.push(`/audio/y名様/${partySize}名様.wav`)
+      items.push({ url: `/audio/y名様/${partySize}名様.wav`, volume: ANNOUNCE_VOLUME })
     }
 
     if (partySize >= 11) {
-      urls.push(`/audio/y名様/お客様.wav`)
+      items.push({ url: `/audio/y名様/お客様.wav`, volume: ANNOUNCE_VOLUME })
     }
 
-    urls.push('/audio/受付までお越しください.wav')
+    items.push({ url: '/audio/受付までお越しください.wav', volume: ANNOUNCE_VOLUME })
   }
 
-  queue.push(urls)
+  queue.push(items)
   processQueue()
 }
