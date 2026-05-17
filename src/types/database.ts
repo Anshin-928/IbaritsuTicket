@@ -18,6 +18,7 @@ export interface Ticket {
   ticket_number: number
   party_size: number
   status: TicketStatus
+  registered_at: string | null
   created_at: string
   updated_at: string
 }

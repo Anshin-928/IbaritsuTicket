@@ -10,10 +10,11 @@ import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined'
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
+import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ResponsiveContainer, ComposedChart, Line,
+  Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
 import type { Ticket } from '@/types/database'
 
@@ -41,6 +42,13 @@ function addDays(dateStr: string, delta: number): string {
   return toLocalDateStr(new Date(y, m - 1, d + delta))
 }
 
+function formatMinutes(minutes: number): string {
+  if (minutes < 60) return `${Math.round(minutes)}分`
+  const h = Math.floor(minutes / 60)
+  const m = Math.round(minutes % 60)
+  return m === 0 ? `${h}時間` : `${h}時間${m}分`
+}
+
 /** データがある時間帯の前後1時間を含めてトリミング */
 function trimHours<T extends { _count: number }>(hours: T[]): T[] {
   let start = 0, end = hours.length - 1
@@ -50,35 +58,20 @@ function trimHours<T extends { _count: number }>(hours: T[]): T[] {
   return hours.slice(Math.max(0, start - 1), Math.min(hours.length - 1, end + 2))
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CompletionTooltip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null
-  return (
-    <Box sx={{ bgcolor: '#fff', border: '1px solid #ddd', borderRadius: 2, p: 1.5, fontSize: 13 }}>
-      <Typography fontWeight="bold" mb={0.5}>{label}</Typography>
-      {payload.map((p: { name: string; value: number; color: string }) => (
-        <Box key={p.name} display="flex" alignItems="center" gap={0.75} mb={0.25}>
-          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: p.color, flexShrink: 0 }} />
-          <span>{p.name}: {p.value}</span>
-        </Box>
-      ))}
-    </Box>
-  )
-}
-
 export default function StatsClient({ tickets }: Props) {
   const today = toLocalDateStr(new Date())
   const [selectedDate, setSelectedDate] = useState(today)
 
   /**
-   * 選択日に「最後に更新された」チケットを対象とする。
-   * created_at ではなく updated_at で日付をフィルタする理由:
-   *   PDFを事前印刷すると tickets レコードが前日以前に unissued で INSERT される。
-   *   created_at は PDF生成時刻のため、当日の受付を正しく集計できない。
-   *   updated_at（最終ステータス更新時刻）を使うことで当日の活動を正しく捉える。
+   * registered_at（受付時刻）で日付フィルタする。
+   * - registered_at がある場合: 受付登録された日で判定
+   * - registered_at がない場合: updated_at で判定（フォールバック）
    */
   const filtered = useMemo(() => {
-    return tickets.filter((t) => toLocalDateStr(new Date(t.updated_at)) === selectedDate)
+    return tickets.filter((t) => {
+      const ts = t.registered_at ?? t.updated_at
+      return toLocalDateStr(new Date(ts)) === selectedDate
+    })
   }, [tickets, selectedDate])
 
   const doneTickets = useMemo(() => filtered.filter((t) => t.status === 'done'), [filtered])
@@ -89,11 +82,17 @@ export default function StatsClient({ tickets }: Props) {
   const avgPartySize = totalGroups > 0 ? (totalVisitors / totalGroups).toFixed(1) : '—'
   const totalDone = doneTickets.length
 
-  // ── 時間別アクティビティグラフ（updated_at ベース）──────────
-  // waiting: 受付時刻と一致（まだ呼ばれていない）
-  // called: 呼出時刻
-  // done: 完了時刻（= 来場時刻）
-  // ※ done/called の「受付時刻」は updated_at に上書きされており取得不可
+  // 平均待ち時間（registered_at → updated_at）
+  const avgWaitMin = useMemo(() => {
+    const measurable = doneTickets.filter((t) => t.registered_at)
+    if (measurable.length === 0) return null
+    const totalMs = measurable.reduce((sum, t) => {
+      return sum + (new Date(t.updated_at).getTime() - new Date(t.registered_at!).getTime())
+    }, 0)
+    return totalMs / measurable.length / 1000 / 60
+  }, [doneTickets])
+
+  // ── 時間別受付数グラフ（registered_at ベース）──────────────
   const activityData = useMemo(() => {
     const hours = Array.from({ length: 24 }, (_, i) => ({
       hour: `${i}時`,
@@ -102,7 +101,8 @@ export default function StatsClient({ tickets }: Props) {
       _count: 0,
     }))
     for (const t of filtered) {
-      const h = new Date(t.updated_at).getHours()
+      const ts = t.registered_at ?? t.updated_at
+      const h = new Date(ts).getHours()
       hours[h].人数 += t.party_size ?? 0
       hours[h].グループ数 += 1
       hours[h]._count += 1
@@ -110,7 +110,7 @@ export default function StatsClient({ tickets }: Props) {
     return trimHours(hours)
   }, [filtered])
 
-  // ── 時間別完了数グラフ（done の updated_at ベース）──────────
+  // ── 時間別完了数グラフ（done の updated_at ベース）+ 平均待ち時間 ──
   const completionData = useMemo(() => {
     const hours = Array.from({ length: 24 }, (_, i) => ({
       hour: `${i}時`,
@@ -119,7 +119,10 @@ export default function StatsClient({ tickets }: Props) {
       _count: 0,
     }))
     for (const t of doneTickets) {
-      const h = new Date(t.updated_at).getHours()
+      // 完了時刻: updated_at が正しいが、トリガーで壊れている場合は registered_at にフ��ールバック
+      // （バックフィル時に registered_at = 元の updated_at が入っている）
+      const doneTs = t.registered_at ?? t.updated_at
+      const h = new Date(doneTs).getHours()
       hours[h].完了グループ数 += 1
       hours[h].完了人数 += t.party_size ?? 0
       hours[h]._count += 1
@@ -132,6 +135,12 @@ export default function StatsClient({ tickets }: Props) {
     { label: '総グループ数', value: `${totalGroups}組`, Icon: GroupsOutlinedIcon },
     { label: '平均グループ人数', value: `${avgPartySize}名`, Icon: PersonOutlinedIcon },
     { label: '体験完了グループ数', value: `${totalDone}組`, Icon: CheckCircleOutlinedIcon },
+    {
+      label: '平均待ち時間',
+      value: avgWaitMin !== null ? formatMinutes(avgWaitMin) : '—',
+      Icon: TimerOutlinedIcon,
+      hint: '受付登録から完了ボタン押下までの平均時間（完了済みのみ）',
+    },
   ]
 
   const noData = filtered.length === 0
@@ -171,7 +180,7 @@ export default function StatsClient({ tickets }: Props) {
 
       {/* サマリーカード */}
       <Stack direction="row" spacing={2} mb={3} flexWrap="wrap" useFlexGap>
-        {summaryCards.map(({ label, value, Icon }) => (
+        {summaryCards.map(({ label, value, Icon, hint }) => (
           <Card key={label} sx={{ flex: '1 1 140px', minWidth: 130 }} elevation={2}>
             <CardContent sx={{ py: 2, '&:last-child': { pb: 2 } }}>
               <Box display="flex" alignItems="center" gap={0.75} mb={0.5}>
@@ -179,6 +188,11 @@ export default function StatsClient({ tickets }: Props) {
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   {label}
                 </Typography>
+                {hint && (
+                  <MuiTooltip title={hint} placement="top" arrow>
+                    <InfoOutlinedIcon sx={{ fontSize: '14px', color: 'text.disabled', cursor: 'help' }} />
+                  </MuiTooltip>
+                )}
               </Box>
               <Typography variant="h5" fontWeight="bold" color="#274a79">
                 {value}
@@ -188,14 +202,14 @@ export default function StatsClient({ tickets }: Props) {
         ))}
       </Stack>
 
-      {/* 時間別アクティビティグラフ */}
+      {/* 時間別受付数グラフ */}
       <Paper elevation={2} sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
         <Box display="flex" alignItems="center" gap={0.75} mb={2}>
           <Typography fontWeight="bold" fontSize="15px" color="#1a1a1a">
-            時間別来客状況
+            時間別受付数
           </Typography>
           <MuiTooltip
-            title="最終ステータス更新時刻で集計しています。待機中チケットは受付時刻、呼出中・完了チケットはそれぞれの操作時刻を反映します。"
+            title="受付登録時刻（registered_at）で集計しています。"
             placement="top"
             arrow
           >
@@ -236,16 +250,16 @@ export default function StatsClient({ tickets }: Props) {
         {doneTickets.length === 0 ? (
           <EmptyChart label="完了済みデータがありません" />
         ) : (
-          <ResponsiveContainer width="100%" height={260}>
-            <ComposedChart data={completionData} barGap={0} margin={{ top: 4, right: 16, left: -12, bottom: 4 }}>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={completionData} barGap={0} margin={{ top: 4, right: 16, left: -12, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
               <XAxis dataKey="hour" tick={{ fontSize: 12 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-              <Tooltip content={<CompletionTooltip />} cursor={{ fill: 'rgba(46,125,50,0.06)' }} />
+              <Tooltip contentStyle={{ borderRadius: 8, fontSize: 13 }} cursor={{ fill: 'rgba(46,125,50,0.06)' }} />
               <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar dataKey="完了グループ数" fill="#2e7d32" radius={[4, 4, 0, 0]} />
               <Bar dataKey="完了人数" fill="#81c784" radius={[4, 4, 0, 0]} />
-            </ComposedChart>
+            </BarChart>
           </ResponsiveContainer>
         )}
       </Paper>

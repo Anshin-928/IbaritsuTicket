@@ -44,6 +44,7 @@ export type Database = {
           created_at: string | null
           id: string
           party_size: number | null
+          registered_at: string | null
           status: string | null
           ticket_number: number
           updated_at: string | null
@@ -53,6 +54,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           party_size?: number | null
+          registered_at?: string | null
           status?: string | null
           ticket_number: number
           updated_at?: string | null
@@ -62,6 +64,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           party_size?: number | null
+          registered_at?: string | null
           status?: string | null
           ticket_number?: number
           updated_at?: string | null
