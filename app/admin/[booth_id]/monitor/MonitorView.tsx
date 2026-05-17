@@ -52,11 +52,12 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
 
   const calledIdStr = calledTickets.map((t) => t.id).join(',')
   useEffect(() => {
-    const currentIds = new Set(calledTickets.map((t) => t.id))
-    const newIds = calledTickets
-      .filter((t) => !prevCalledIdsRef.current.has(t.id))
-      .map((t) => t.id)
-
+    if (!calledIdStr) {
+      prevCalledIdsRef.current = new Set()
+      return
+    }
+    const currentIds = new Set(calledIdStr.split(','))
+    const newIds = [...currentIds].filter((id) => !prevCalledIdsRef.current.has(id))
     prevCalledIdsRef.current = currentIds
 
     if (newIds.length > 0) {
@@ -64,7 +65,6 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
       const timer = setTimeout(() => setBlinkingIds(new Set()), 1200)
       return () => clearTimeout(timer)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calledIdStr])
 
   // AppBar のバッジカウントを Context 経由で更新
