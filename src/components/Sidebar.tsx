@@ -177,20 +177,22 @@ export default function Sidebar({ isSidebarOpen, boothId, boothName, onToggle, i
               <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.12)' }} />
             )}
 
-            <Box sx={{ px: 3, pt: groupIndex > 0 ? 0.5 : 0, pb: 0.5 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: SIDEBAR_TEXT_MUTED,
-                  fontWeight: 700,
-                  letterSpacing: '0.10em',
-                  fontSize: '12px',
-                  textTransform: 'uppercase',
-                }}
-              >
-                {group.label}
-              </Typography>
-            </Box>
+            {group.label && (
+              <Box sx={{ px: 3, pt: groupIndex > 0 ? 0.5 : 0, pb: 0.5 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: SIDEBAR_TEXT_MUTED,
+                    fontWeight: 700,
+                    letterSpacing: '0.10em',
+                    fontSize: '12px',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {group.label}
+                </Typography>
+              </Box>
+            )}
 
             {group.items.map((item) => {
               const path = getBoothPath(boothId, item.pathSegment)

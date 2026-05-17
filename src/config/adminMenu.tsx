@@ -2,6 +2,7 @@
 
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import TvOutlinedIcon           from '@mui/icons-material/TvOutlined'
+import BarChartOutlinedIcon    from '@mui/icons-material/BarChartOutlined'
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 import SettingsOutlinedIcon     from '@mui/icons-material/SettingsOutlined'
 import type { SvgIconComponent } from '@mui/icons-material'
@@ -27,9 +28,10 @@ export const menuGroups: MenuGroupConfig[] = [
     ],
   },
   {
-    label: '事前準備',
+    label: '',
     items: [
       { key: 'tickets', text: '整理券PDF生成', pathSegment: 'tickets', Icon: ConfirmationNumberOutlinedIcon },
+      { key: 'stats', text: '来客統計', pathSegment: 'stats', Icon: BarChartOutlinedIcon },
       { key: 'settings', text: '設定', pathSegment: 'settings', Icon: SettingsOutlinedIcon },
     ],
   },
