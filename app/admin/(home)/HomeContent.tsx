@@ -7,7 +7,6 @@ import Paper from '@mui/material/Paper'
 import Alert from '@mui/material/Alert'
 import Chip from '@mui/material/Chip'
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined'
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import type { Booth } from '@/types/database'
 
@@ -38,9 +37,12 @@ export default function HomeContent({ booths, ticketSummaries, fetchError }: Pro
     return <Alert severity="info">ブースが登録されていません。</Alert>
   }
 
-  const totalWaiting = ticketSummaries.filter(t => t.status === 'waiting' || t.status === 'called').length
-  const totalPeople  = ticketSummaries.filter(t => t.status === 'waiting' || t.status === 'called').reduce((s, t) => s + (t.party_size ?? 0), 0)
-  const totalDone    = ticketSummaries.filter(t => t.status === 'done').length
+  const waitingTickets = ticketSummaries.filter(t => t.status === 'waiting' || t.status === 'called')
+  const totalWaiting = waitingTickets.length
+  const totalWaitingPeople = waitingTickets.reduce((s, t) => s + (t.party_size ?? 0), 0)
+  const doneTickets = ticketSummaries.filter(t => t.status === 'done')
+  const totalDone = doneTickets.length
+  const totalDonePeople = doneTickets.reduce((s, t) => s + (t.party_size ?? 0), 0)
 
   return (
     <Box>
@@ -113,27 +115,46 @@ export default function HomeContent({ booths, ticketSummaries, fetchError }: Pro
       <Typography fontWeight="bold" sx={{ mb: 2, fontSize: '0.9rem', color: 'text.secondary', letterSpacing: '0.05em' }}>
         全体集計
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
-        {[
-          { label: '現在の待ち', value: totalWaiting, unit: '組', icon: <PeopleOutlinedIcon sx={{ fontSize: '1.3rem', color: 'text.secondary' }} /> },
-          { label: '待ち人数',   value: totalPeople,  unit: '人', icon: <PersonOutlinedIcon sx={{ fontSize: '1.3rem', color: 'text.secondary' }} /> },
-          { label: '本日完了',   value: totalDone,    unit: '組', icon: <CheckCircleOutlinedIcon sx={{ fontSize: '1.3rem', color: 'text.secondary' }} /> },
-        ].map(({ label, value, unit, icon }) => (
-          <Paper
-            key={label}
-            elevation={0}
-            sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 2.5, textAlign: 'center' }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mb: 1 }}>
-              {icon}
-              <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>{label}</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 0.5 }}>
-              <Typography sx={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: 1 }}>{value}</Typography>
-              <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>{unit}</Typography>
-            </Box>
-          </Paper>
-        ))}
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+        {/* 現在の待ち */}
+        <Paper
+          elevation={0}
+          sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 2.5 }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+            <PeopleOutlinedIcon sx={{ fontSize: '1.3rem', color: '#e65100' }} />
+            <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary', fontWeight: 600 }}>現在の待ち</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+            <Typography sx={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: 1, color: 'text.primary' }}>
+              {totalWaiting}
+            </Typography>
+            <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>組</Typography>
+            <Typography sx={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'text.primary', ml: 0.5 }}>
+              （{totalWaitingPeople}人）
+            </Typography>
+          </Box>
+        </Paper>
+
+        {/* 本日完了 */}
+        <Paper
+          elevation={0}
+          sx={{ border: '1px solid #e0e0e0', borderRadius: 2, p: 2.5 }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+            <CheckCircleOutlinedIcon sx={{ fontSize: '1.3rem', color: '#2e7d32' }} />
+            <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary', fontWeight: 600 }}>本日完了</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+            <Typography sx={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: 1, color: 'text.primary' }}>
+              {totalDone}
+            </Typography>
+            <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>組</Typography>
+            <Typography sx={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'text.primary', ml: 0.5 }}>
+              （{totalDonePeople}人）
+            </Typography>
+          </Box>
+        </Paper>
       </Box>
     </Box>
   )

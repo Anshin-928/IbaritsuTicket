@@ -6,9 +6,6 @@ import {
 } from '@mui/material'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined'
-import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -42,13 +39,6 @@ function addDays(dateStr: string, delta: number): string {
   return toLocalDateStr(new Date(y, m - 1, d + delta))
 }
 
-function formatMinutes(minutes: number): string {
-  if (minutes < 60) return `${Math.round(minutes)}分`
-  const h = Math.floor(minutes / 60)
-  const m = Math.round(minutes % 60)
-  return m === 0 ? `${h}時間` : `${h}時間${m}分`
-}
-
 /** データがある時間帯の前後1時間を含めてトリミング */
 function trimHours<T extends { _count: number }>(hours: T[]): T[] {
   let start = 0, end = hours.length - 1
@@ -77,20 +67,7 @@ export default function StatsClient({ tickets }: Props) {
   const doneTickets = useMemo(() => filtered.filter((t) => t.status === 'done'), [filtered])
 
   // ── 集計値 ──────────────────────────────────────────────────
-  const totalVisitors = filtered.reduce((sum, t) => sum + (t.party_size ?? 0), 0)
-  const totalGroups = filtered.length
-  const avgPartySize = totalGroups > 0 ? (totalVisitors / totalGroups).toFixed(1) : '—'
   const totalDone = doneTickets.length
-
-  // 平均待ち時間（registered_at → updated_at）
-  const avgWaitMin = useMemo(() => {
-    const measurable = doneTickets.filter((t) => t.registered_at)
-    if (measurable.length === 0) return null
-    const totalMs = measurable.reduce((sum, t) => {
-      return sum + (new Date(t.updated_at).getTime() - new Date(t.registered_at!).getTime())
-    }, 0)
-    return totalMs / measurable.length / 1000 / 60
-  }, [doneTickets])
 
   // ── 時間別受付数グラフ（registered_at ベース）──────────────
   const activityData = useMemo(() => {
@@ -130,18 +107,13 @@ export default function StatsClient({ tickets }: Props) {
     return trimHours(hours)
   }, [doneTickets])
 
-  const summaryCards = [
-    { label: '総来客者数', value: `${totalVisitors}名`, Icon: PeopleOutlinedIcon },
-    { label: '総グループ数', value: `${totalGroups}組`, Icon: GroupsOutlinedIcon },
-    { label: '平均グループ人数', value: `${avgPartySize}名`, Icon: PersonOutlinedIcon },
-    { label: '体験完了グループ数', value: `${totalDone}組`, Icon: CheckCircleOutlinedIcon },
-    {
-      label: '平均待ち時間',
-      value: avgWaitMin !== null ? formatMinutes(avgWaitMin) : '—',
-      Icon: TimerOutlinedIcon,
-      hint: '受付登録から完了ボタン押下までの平均時間（完了済みのみ）',
-    },
-  ]
+  // 現在待ち（waiting ステータス）
+  const waitingTickets = filtered.filter((t) => t.status === 'waiting')
+  const waitingGroups = waitingTickets.length
+  const waitingPeople = waitingTickets.reduce((sum, t) => sum + (t.party_size ?? 0), 0)
+
+  // 本日完了（done ステータス）
+  const donePeople = doneTickets.reduce((sum, t) => sum + (t.party_size ?? 0), 0)
 
   const noData = filtered.length === 0
 
@@ -178,28 +150,43 @@ export default function StatsClient({ tickets }: Props) {
         </IconButton>
       </Box>
 
-      {/* サマリーカード */}
+      {/* 全体集計 */}
       <Stack direction="row" spacing={2} mb={3} flexWrap="wrap" useFlexGap>
-        {summaryCards.map(({ label, value, Icon, hint }) => (
-          <Card key={label} sx={{ flex: '1 1 140px', minWidth: 130 }} elevation={2}>
-            <CardContent sx={{ py: 2, '&:last-child': { pb: 2 } }}>
-              <Box display="flex" alignItems="center" gap={0.75} mb={0.5}>
-                <Icon sx={{ fontSize: '18px', color: '#274a79', opacity: 0.8 }} />
-                <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                  {label}
-                </Typography>
-                {hint && (
-                  <MuiTooltip title={hint} placement="top" arrow>
-                    <InfoOutlinedIcon sx={{ fontSize: '14px', color: 'text.disabled', cursor: 'help' }} />
-                  </MuiTooltip>
-                )}
-              </Box>
-              <Typography variant="h5" fontWeight="bold" color="#274a79">
-                {value}
+        {/* 現在の待ち */}
+        <Card sx={{ flex: '1 1 200px' }} elevation={2}>
+          <CardContent sx={{ py: 2.5, px: 3, '&:last-child': { pb: 2.5 } }}>
+            <Box display="flex" alignItems="center" gap={0.75} mb={1}>
+              <TimerOutlinedIcon sx={{ fontSize: '20px', color: '#e65100', opacity: 0.9 }} />
+              <Typography variant="caption" color="text.secondary" fontWeight={700} fontSize="13px">
+                現在の待ち
               </Typography>
-            </CardContent>
-          </Card>
-        ))}
+            </Box>
+            <Typography fontWeight="bold" color="text.primary" fontSize="28px" lineHeight={1.2}>
+              {waitingGroups}組
+              <Typography component="span" fontSize="18px" fontWeight="bold" color="text.primary" sx={{ ml: 0.5 }}>
+                （{waitingPeople}人）
+              </Typography>
+            </Typography>
+          </CardContent>
+        </Card>
+
+        {/* 本日完了 */}
+        <Card sx={{ flex: '1 1 200px' }} elevation={2}>
+          <CardContent sx={{ py: 2.5, px: 3, '&:last-child': { pb: 2.5 } }}>
+            <Box display="flex" alignItems="center" gap={0.75} mb={1}>
+              <CheckCircleOutlinedIcon sx={{ fontSize: '20px', color: '#2e7d32', opacity: 0.9 }} />
+              <Typography variant="caption" color="text.secondary" fontWeight={700} fontSize="13px">
+                本日完了
+              </Typography>
+            </Box>
+            <Typography fontWeight="bold" color="text.primary" fontSize="28px" lineHeight={1.2}>
+              {totalDone}組
+              <Typography component="span" fontSize="18px" fontWeight="bold" color="text.primary" sx={{ ml: 0.5 }}>
+                （{donePeople}人）
+              </Typography>
+            </Typography>
+          </CardContent>
+        </Card>
       </Stack>
 
       {/* 時間別受付数グラフ */}
