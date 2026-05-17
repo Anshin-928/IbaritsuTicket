@@ -1,7 +1,7 @@
 // app/admin/[booth_id]/monitor/MonitorView.tsx
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
@@ -46,6 +46,31 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
   const onHoldTickets  = tickets.filter((t) => t.status === 'on_hold')
   const waitingCount   = calledTickets.length + waitingTickets.length
 
+  // 新しく called に移動したチケットを検出して点滅させる
+  const prevCalledIds = useRef<Set<string>>(new Set(calledTickets.map((t) => t.id)))
+  const [blinkingIds, setBlinkingIds] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    const prevIds = prevCalledIds.current
+    const newIds = calledTickets
+      .filter((t) => !prevIds.has(t.id))
+      .map((t) => t.id)
+
+    if (newIds.length > 0) {
+      setBlinkingIds(new Set(newIds))
+      // 点滅アニメーション終了後にクリア（3回点滅 × 400ms = 1200ms）
+      const timer = setTimeout(() => setBlinkingIds(new Set()), 1200)
+      return () => clearTimeout(timer)
+    }
+
+    prevCalledIds.current = new Set(calledTickets.map((t) => t.id))
+  }, [calledTickets])
+
+  // calledTickets が変わるたびに prevIds を更新（blinking 処理の後）
+  useEffect(() => {
+    prevCalledIds.current = new Set(calledTickets.map((t) => t.id))
+  }, [calledTickets])
+
   // AppBar のバッジカウントを Context 経由で更新
   useEffect(() => { setWaitingCount(waitingCount) }, [waitingCount, setWaitingCount])
 
@@ -82,6 +107,13 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
                   bgcolor: '#fdffff', border: '2.5px solid #2e5bc5', borderRadius: '10px',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1), 0 1px 6px rgba(0,0,0,0.1)',
+                  ...(blinkingIds.has(t.id) && {
+                    animation: 'blink 0.4s ease-in-out 3',
+                    '@keyframes blink': {
+                      '0%, 100%': { opacity: 1 },
+                      '50%': { opacity: 0.2 },
+                    },
+                  }),
                 }}>
                   <Typography sx={{ fontSize: { xs: '52px', md: '80px' }, fontWeight: 500, color: '#1d3776', lineHeight: 1, mb: { xs: '14px', md: '20px' } }}>
                     {t.ticket_number}
