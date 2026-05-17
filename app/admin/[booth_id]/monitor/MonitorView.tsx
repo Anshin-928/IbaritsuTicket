@@ -47,29 +47,25 @@ export default function MonitorView({ booth, initialTickets }: MonitorViewProps)
   const waitingCount   = calledTickets.length + waitingTickets.length
 
   // 新しく called に移動したチケットを検出して点滅させる
-  const prevCalledIds = useRef<Set<string>>(new Set(calledTickets.map((t) => t.id)))
+  const prevCalledIdsRef = useRef<Set<string>>(new Set(initialTickets.filter((t) => t.status === 'called').map((t) => t.id)))
   const [blinkingIds, setBlinkingIds] = useState<Set<string>>(new Set())
 
+  const calledIdStr = calledTickets.map((t) => t.id).join(',')
   useEffect(() => {
-    const prevIds = prevCalledIds.current
+    const currentIds = new Set(calledTickets.map((t) => t.id))
     const newIds = calledTickets
-      .filter((t) => !prevIds.has(t.id))
+      .filter((t) => !prevCalledIdsRef.current.has(t.id))
       .map((t) => t.id)
+
+    prevCalledIdsRef.current = currentIds
 
     if (newIds.length > 0) {
       setBlinkingIds(new Set(newIds))
-      // 点滅アニメーション終了後にクリア（3回点滅 × 400ms = 1200ms）
       const timer = setTimeout(() => setBlinkingIds(new Set()), 1200)
       return () => clearTimeout(timer)
     }
-
-    prevCalledIds.current = new Set(calledTickets.map((t) => t.id))
-  }, [calledTickets])
-
-  // calledTickets が変わるたびに prevIds を更新（blinking 処理の後）
-  useEffect(() => {
-    prevCalledIds.current = new Set(calledTickets.map((t) => t.id))
-  }, [calledTickets])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calledIdStr])
 
   // AppBar のバッジカウントを Context 経由で更新
   useEffect(() => { setWaitingCount(waitingCount) }, [waitingCount, setWaitingCount])
