@@ -1,4 +1,4 @@
-# <img src="public/logo.svg" width="40" height="40" align="center" alt="Queuing Ticket System Logo">&nbsp;&nbsp;整理券発券システム
+# <img src="public/logo.svg" width="40" height="40" align="center" alt="Queuing Ticket System Logo">&nbsp;&nbsp;リアルタイム順番待ち＆整理券発券システム
 
 ### 学園祭・イベント向けのリアルタイム順番待ち＆整理券発券システム。ブースごとの受付・呼び出し・モニター表示・QR整理券発行をワンストップで提供。
 
