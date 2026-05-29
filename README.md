@@ -84,7 +84,7 @@ Supabase Realtime を活用し、呼び出し状況やモニター画面がリ�
 ## ディレクトリ構成
 
 ```
-queuing-ticket-system/
+IbaritsuTicket/
 ├── app/
 │   ├── admin/
 │   │   ├── (home)/              # 管理トップ・ブース一覧
@@ -121,8 +121,8 @@ queuing-ticket-system/
 ### 1. リポジトリのクローン
 
 ```bash
-git clone https://github.com/Anshin-928/queuing-ticket-system.git
-cd queuing-ticket-system
+git clone https://github.com/Anshin-928/IbaritsuTicket.git
+cd IbaritsuTicket
 ```
 
 ### 2. 依存パッケージのインストール
