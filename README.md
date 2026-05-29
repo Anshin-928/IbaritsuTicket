@@ -1,13 +1,12 @@
-# <img src="public/logo.svg" width="40" height="40" align="center" alt="Queuing Ticket System Logo">&nbsp;&nbsp;Queuing Ticket System
+# <img src="public/logo.svg" width="40" height="40" align="center" alt="Queuing Ticket System Logo">&nbsp;&nbsp;整理券発券システム
 
-### 学園祭・イベント向けの汎用リアルタイム順番待ち＆整理券発券システム。ブースごとの受付・呼び出し・モニター表示・QR整理券発行をワンストップで提供。
+### 学園祭・イベント向けのリアルタイム順番待ち＆整理券発券システム。ブースごとの受付・呼び出し・モニター表示・QR整理券発行をワンストップで提供。
 
 <p align="center">
-  <!-- スクリーンショットを追加する場合はここに配置 -->
-  <!-- <img src="https://github.com/user-attachments/assets/xxx" width="49%" alt="Dashboard"> -->
-  <!-- <img src="https://github.com/user-attachments/assets/xxx" width="49%" alt="Monitor"> -->
-  <!-- <img src="https://github.com/user-attachments/assets/xxx" width="49%" alt="Reception"> -->
-  <!-- <img src="https://github.com/user-attachments/assets/xxx" width="49%" alt="Ticket PDF"> -->
+  <img src="https://github.com/user-attachments/assets/526ec905-93bf-4cf7-b413-917d3e5fc903" width="49%" alt="Dashboard">
+  <img src="https://github.com/user-attachments/assets/47b738d6-f56b-4bfd-b821-69fd3ecb6dea" width="49%" alt="Monitor">
+  <img src="https://github.com/user-attachments/assets/4a7805d4-d486-42c2-b057-58c2d673d2d9" width="49%" alt="Reception">
+  <img src="https://github.com/user-attachments/assets/1de25258-387c-43b7-aa54-a5ca4e7e284e" width="49%" alt="Ticket PDF">
 </p>
 
 ---
@@ -19,6 +18,19 @@
 混雑時にブースごとの整理券を発行し、QR コード付き整理券で来場者が自分のスマホから順番をリアルタイムに確認できます。空いているときはシステムを介さずそのまま案内するため、運用負荷を最小限に抑えられます。
 
 Supabase Realtime を活用し、呼び出し状況やモニター画面がリアルタイムに同期されます。
+
+---
+
+## 実運用実績
+本システムは、実際の大型イベントにて情報理工学部オリター団が管轄する全ブースに導入され、計400名以上のお客様にご利用いただきました。
+### 導入効果
+- **最大3時間待ちの行列を解消:** 特に人気の高かったドローン体験ブース等において、物理的な待機列をなくし、通路の混雑やクレームを未然に防止。
+- **来場者のUX向上:** 「列に縛られず、待ち時間に他のブースを楽しめる」という自由なイベント体験を提供。
+- **現場オペレーションの最適化:** 複数ブースの待ち状況を一つのシステムで一元管理し、スタッフの案内負荷を大幅に軽減しました。
+<p align="left">
+  <img src="https://github.com/user-attachments/assets/84865421-e45d-442f-b9d3-47aaa3edde17" width="60%" alt="運営当日のモニター画面"/>
+  <br>▲ 運営当日のモニター画面。リアルタイムで待ち組数が更新され、現場の混乱を防ぎました。</em>
+</p>
 
 ---
 
